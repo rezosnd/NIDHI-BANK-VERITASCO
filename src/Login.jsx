@@ -58,54 +58,121 @@ function Login({ onLogin }) {
         {/* ── LEFT PANEL ── */}
         <div className="login-left-panel">
           <div className="login-left-content">
-            
-            {/* Top Header */}
-            <div className="login-header-row">
-              <div className="login-logo-block">
-                <img src="/veritasco.png" alt="VeritasCo Logo" className="login-logo-img" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                <div className="login-logo-fallback">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
+
+            {/* ── TOP: Brand + nav info ── */}
+            <div className="lp-top">
+              {/* Logo + company name */}
+              <div className="lp-brand">
+                <div className="lp-brand-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="lp-brand-name">VeritasCo</div>
+                  <div className="lp-brand-tag">Complete digital solutions</div>
                 </div>
               </div>
-              
-              <div className="login-header-text-block">
-                <div className="login-accent-text">Banking / Nidhi Company</div>
-                <div className="login-white-text">Modern Business Solutions</div>
-                <div className="login-bold-text">PRODUCTION SOFTWARE</div>
+
+              {/* Top right info */}
+              <div className="lp-topright">
+                <div className="lp-badge">Banking · Nidhi · Co-op</div>
+                <div className="lp-badge lp-badge-outline">PRODUCTION</div>
               </div>
             </div>
 
-            <div className="login-phone-contact">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.5 2 2 0 0 1 3.6 1.35h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.5 17z"/></svg>
-              <span>+91-8709442363</span>
+            {/* ── CENTRE: SVG Illustration + Headline ── */}
+            <div className="lp-centre">
+              {/* Bespoke SVG: abstract shield / data network */}
+              <div className="lp-svg-wrap">
+                <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="lp-svg">
+                  {/* Glow blob */}
+                  <ellipse cx="160" cy="110" rx="130" ry="90" fill="url(#blobGrad)" opacity="0.18"/>
+                  {/* Grid lines */}
+                  <line x1="0" y1="55" x2="320" y2="55" stroke="#1e3a5f" strokeWidth="1"/>
+                  <line x1="0" y1="110" x2="320" y2="110" stroke="#1e3a5f" strokeWidth="1"/>
+                  <line x1="0" y1="165" x2="320" y2="165" stroke="#1e3a5f" strokeWidth="1"/>
+                  <line x1="80" y1="0" x2="80" y2="220" stroke="#1e3a5f" strokeWidth="1"/>
+                  <line x1="160" y1="0" x2="160" y2="220" stroke="#1e3a5f" strokeWidth="1"/>
+                  <line x1="240" y1="0" x2="240" y2="220" stroke="#1e3a5f" strokeWidth="1"/>
+                  {/* Shield */}
+                  <path d="M160 20 L200 38 L200 82 Q200 118 160 138 Q120 118 120 82 L120 38 Z" fill="url(#shieldGrad)" opacity="0.9"/>
+                  <path d="M160 28 L194 44 L194 82 Q194 113 160 130 Q126 113 126 82 L126 44 Z" fill="none" stroke="#60a5fa" strokeWidth="1.5"/>
+                  {/* Checkmark inside shield */}
+                  <path d="M148 79 l8 9 l16-18" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  {/* Connection nodes */}
+                  <circle cx="52" cy="80" r="5" fill="#3b82f6" opacity="0.7"/>
+                  <circle cx="268" cy="80" r="5" fill="#3b82f6" opacity="0.7"/>
+                  <circle cx="52" cy="145" r="4" fill="#60a5fa" opacity="0.5"/>
+                  <circle cx="268" cy="145" r="4" fill="#60a5fa" opacity="0.5"/>
+                  <circle cx="160" cy="165" r="4" fill="#93c5fd" opacity="0.5"/>
+                  {/* Connection lines */}
+                  <line x1="57" y1="80" x2="120" y2="65" stroke="#3b82f6" strokeWidth="1" strokeDasharray="4 3" opacity="0.4"/>
+                  <line x1="263" y1="80" x2="200" y2="65" stroke="#3b82f6" strokeWidth="1" strokeDasharray="4 3" opacity="0.4"/>
+                  <line x1="56" y1="145" x2="126" y2="120" stroke="#60a5fa" strokeWidth="1" strokeDasharray="4 3" opacity="0.3"/>
+                  <line x1="264" y1="145" x2="194" y2="120" stroke="#60a5fa" strokeWidth="1" strokeDasharray="4 3" opacity="0.3"/>
+                  <line x1="160" y1="161" x2="160" y2="138" stroke="#93c5fd" strokeWidth="1" strokeDasharray="4 3" opacity="0.3"/>
+                  {/* Stat pills */}
+                  <rect x="18" y="68" width="28" height="12" rx="6" fill="#1e3a5f" opacity="0.8"/>
+                  <text x="32" y="77" textAnchor="middle" fontSize="6" fill="#93c5fd" fontFamily="monospace">99.9%</text>
+                  <rect x="274" y="68" width="28" height="12" rx="6" fill="#1e3a5f" opacity="0.8"/>
+                  <text x="288" y="77" textAnchor="middle" fontSize="6" fill="#93c5fd" fontFamily="monospace">256-bit</text>
+                  {/* Defs */}
+                  <defs>
+                    <radialGradient id="blobGrad" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#3b82f6"/>
+                      <stop offset="100%" stopColor="#0f172a"/>
+                    </radialGradient>
+                    <linearGradient id="shieldGrad" x1="160" y1="20" x2="160" y2="138" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#2563eb"/>
+                      <stop offset="100%" stopColor="#1e3a8a"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              <div className="lp-headline">
+                <h1>
+                  Complete<br />
+                  <span className="lp-hl-accent">Digital Solutions</span><br />
+                  For Modern Businesses
+                </h1>
+                <p>Smart, Secure &amp; Scalable Software for Co-operative Societies, Banks &amp; Nidhi Companies.</p>
+                <div className="lp-divider"/>
+              </div>
             </div>
 
-            {/* Main Headline */}
-            <div className="login-hero-text">
-              <h1>Complete<br /><span className="text-highlight">Digital Solutions</span><br />For Modern Businesses</h1>
-              <p>Smart, Secure & Scalable Software Solutions for Co-operative Societies, Banks & Nidhi Companies.</p>
-              <div className="login-hero-divider" />
-            </div>
+            {/* ── BOTTOM: features + phone ── */}
+            <div className="lp-bottom">
+              <div className="lp-features">
+                {[
+                  { path:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', label:'Secure & Reliable' },
+                  { path:'M13 10V3L4 14h7v7l9-11h-7z', label:'Performance Driven' },
+                  { path:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8z', label:'User Friendly' },
+                  { path:'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', label:'Always Supported' },
+                ].map((f,i) => (
+                  <div className="lp-feat" key={i}>
+                    <div className="lp-feat-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d={f.path}/>
+                      </svg>
+                    </div>
+                    <span>{f.label}</span>
+                  </div>
+                ))}
+              </div>
 
-            {/* Features */}
-            <div className="login-features-list">
-              {[
-                { icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', title: 'Secure & Reliable', desc: 'Enterprise-grade security for your data' },
-                { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'Performance Driven', desc: 'Built for speed, efficiency and growth' },
-                { icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', title: 'User Friendly', desc: 'Intuitive design for seamless experience' },
-                { icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z', title: 'Always Supported', desc: 'Dedicated support whenever you need' },
-              ].map((f, i) => (
-                <div className="login-feature-item" key={i}>
-                  <div className="login-feature-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d={f.icon}/></svg>
-                  </div>
-                  <div className="login-feature-text">
-                    <h4>{f.title}</h4>
-                    <p>{f.desc}</p>
-                  </div>
+              <div className="lp-footer-row">
+                <div className="lp-phone">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 12 19.79 19.79 0 011.61 3.5 2 2 0 013.6 1.35h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.91 9a16 16 0 006 6l.92-.92a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0121.5 17z"/>
+                  </svg>
+                  <span>+91-8709442363</span>
                 </div>
-              ))}
+                <div className="lp-powered">© 2025 VeritasCo · All rights reserved</div>
+              </div>
             </div>
+
           </div>
         </div>
 
