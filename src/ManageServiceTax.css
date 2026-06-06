@@ -1,0 +1,169 @@
+.service-tax-wrapper {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.st-alert {
+  padding: 10px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.st-alert.success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #34d399;
+}
+
+.st-alert.error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+.st-card {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.st-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.st-table th {
+  background-color: var(--primary);
+  color: #ffffff;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  border-bottom: 2px solid #0f172a;
+}
+
+.st-table td {
+  padding: 6px 12px;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  font-size: 0.8rem;
+}
+
+.st-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.st-table tbody tr.editing {
+  background-color: #eff6ff;
+}
+
+.st-input {
+  width: 85px;
+  padding: 4px 6px;
+  border: 1px solid #94a3b8;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.st-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.st-select {
+  padding: 4px 6px;
+  border: 1px solid #94a3b8;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.st-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.st-checkbox {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.st-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.st-badge.active {
+  background-color: #10b981;
+  color: white;
+}
+
+.st-badge.inactive {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn {
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #059669;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+}
+
+.btn-outline:hover {
+  background-color: var(--bg-color);
+  border-color: #94a3b8;
+}

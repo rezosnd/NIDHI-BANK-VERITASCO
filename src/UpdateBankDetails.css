@@ -1,0 +1,121 @@
+.bank-details-wrapper {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.bd-alert {
+  padding: 10px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.bd-alert.success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #34d399;
+}
+
+.bd-alert.error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+.bd-card {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  padding: 20px;
+}
+
+.bd-form-group {
+  margin-bottom: 16px;
+}
+
+.bd-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.bd-label span {
+  color: #ef4444;
+  margin-left: 4px;
+}
+
+.bd-input, .bd-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #94a3b8;
+  border-radius: 2px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.bd-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1em;
+}
+
+.bd-input:focus, .bd-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.bd-input:disabled {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.bd-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.bd-btn {
+  padding: 6px 16px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bd-btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.bd-btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.bd-btn-primary:disabled {
+  background-color: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
