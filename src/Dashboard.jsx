@@ -31,42 +31,49 @@ import AssignOnlineRequest from './AssignOnlineRequest';
 import ApproveTransactions from './ApproveTransactions';
 import ShareTransferRequest from './ShareTransferRequest';
 import DebitRequestServiceCenter from './DebitRequestServiceCenter';
+import VerifyMemberKYC from './VerifyMemberKYC';
+import PendingUploadDocument from './PendingUploadDocument';
+import MemberRequestEnquiry from './MemberRequestEnquiry';
+import ViewShareApplication from './ViewShareApplication';
+import ManageCalendar from './ManageCalendar';
+import ManageEvents from './ManageEvents';
+import ManageHolidays from './ManageHolidays';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
 import './FandomLogin.css';
 
 const TOP_NAV = [
-  { name: 'BANKING MASTER', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>, subItems: ['Relationship', 'Share Parameter', 'Fee Parameter', 'SB Accounts Parameters', 'SB / OD Account Type', 'Plan Parameters', 'Add Prematurity Slabs', 'Approvals Limit Parameters', 'Service Deduction', 'Deposit TDS Parameter', 'Add Service Charge', 'OD Account Parameters', 'Late Fee Parameter', 'Holiday List', 'Create Financial Year', 'View/Update Financial Year', 'Lock Setting'] },
-  { name: 'HR MODULE', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>, subItems: ['Designation Master', 'Manage Designation', 'Designation Menu Rights', 'Designation Tree View', 'Branch User Rights', 'Service Center User Rights', 'Training Menu', 'Create Employee', 'View/Manage Employee', 'Salary Master', 'Employee Attendance Daily', 'Create Monthly Attendance', 'Create Salary', 'Make Payment Salary', 'View Monthly Attendance', 'View Paid Salary', 'Salary Summary Report', 'View Staff User'] },
-  { name: 'LOAN', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg> },
-  { name: 'GOLD LOAN', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8l4 8H8l4-8z"></path></svg> },
-  { name: 'MANAGE AGENT', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> },
-  { name: 'ACCOUNTING', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg> },
-  { name: 'CARDS', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> },
-  { name: 'PAYMENT GETWAY', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, subItems: ['Request For NEFT', 'Payment Getway Setup', 'NEFT/RTGS/IMPS Setup', 'Payment Getway Charges', 'Update Virtual Account', 'Websoftex Payment SetUp', 'Transaction History', 'Websoftex Transaction Charges'] },
-  { name: 'REPORTS', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>, subItems: ['Customer Complaint / Help Report'] },
-  { name: 'MODIFICATION', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="16 3 21 8 8 21 3 21 3 16 16 3"></polygon></svg>, subItems: ['Policy Modification', 'Change Nominee', 'Change SB Account Type', 'Senior Citizen ROI Change', 'Update Member Date', 'Deposit Member Change', 'Delete Account Transaction', 'Delete Accounts', 'Block/Un-Block Account', 'Deleted Loans Report', 'Deleted EMI Report', 'Deleted Accounts Report', 'Deleted Account Transaction', 'Report', 'Update Share Date', 'Update Member Profile'] }
+  { name: 'BANKING MASTER', color: '#1d4ed8', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>, subItems: ['Relationship', 'Share Parameter', 'Fee Parameter', 'SB Accounts Parameters', 'SB / OD Account Type', 'Plan Parameters', 'Add Prematurity Slabs', 'Approvals Limit Parameters', 'Service Deduction', 'Deposit TDS Parameter', 'Add Service Charge', 'OD Account Parameters', 'Late Fee Parameter', 'Holiday List', 'Create Financial Year', 'View/Update Financial Year', 'Lock Setting'] },
+  { name: 'HR MODULE', color: '#047857', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>, subItems: ['Designation Master', 'Manage Designation', 'Designation Menu Rights', 'Designation Tree View', 'Branch User Rights', 'Service Center User Rights', 'Training Menu', 'Create Employee', 'View/Manage Employee', 'Salary Master', 'Employee Attendance Daily', 'Create Monthly Attendance', 'Create Salary', 'Make Payment Salary', 'View Monthly Attendance', 'View Paid Salary', 'Salary Summary Report', 'View Staff User'] },
+  { name: 'LOAN', color: '#b45309', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg> },
+  { name: 'GOLD LOAN', color: '#a16207', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8l4 8H8l4-8z"></path></svg> },
+  { name: 'MANAGE AGENT', color: '#6d28d9', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> },
+  { name: 'ACCOUNTING', color: '#be185d', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg> },
+  { name: 'CARDS', color: '#0e7490', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> },
+  { name: 'PAYMENT GETWAY', color: '#c2410c', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, subItems: ['Request For NEFT', 'Payment Getway Setup', 'NEFT/RTGS/IMPS Setup', 'Payment Getway Charges', 'Update Virtual Account', 'Websoftex Payment SetUp', 'Transaction History', 'Websoftex Transaction Charges'] },
+  { name: 'REPORTS', color: '#4338ca', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>, subItems: ['Customer Complaint / Help Report'] },
+  { name: 'MODIFICATION', color: '#b91c1c', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="16 3 21 8 8 21 3 21 3 16 16 3"></polygon></svg>, subItems: ['Policy Modification', 'Change Nominee', 'Change SB Account Type', 'Senior Citizen ROI Change', 'Update Member Date', 'Deposit Member Change', 'Delete Account Transaction', 'Delete Accounts', 'Block/Un-Block Account', 'Deleted Loans Report', 'Deleted EMI Report', 'Deleted Accounts Report', 'Deleted Account Transaction', 'Report', 'Update Share Date', 'Update Member Profile'] }
 ];
 
 const BRANCH_TOP_NAV = [
-  { name: 'TRANSACTION', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, subItems: ['Cash Deposit', 'Cash Withdrawal', 'Approval Transactions', 'Rejected Transactions', 'Apply Now', 'Cheque Reconciliation', 'Request For Credit', 'Transfer', 'View Request For NEFT', 'Request For NEFT', 'Renewals', 'Loan Disbursement Payment', 'Loan Disbursement Interest Type', 'Loan Dis. Int. And Pro.Fee Type', 'Service Charge Deduct', 'Print Transaction', 'MIS Interest Pay', 'Loan Emi Payment', 'Add Staff E-Wallet', 'Bulk Deposit', 'Deposit EMI Receivable Today', 'Loan EMI Receivable Today', 'Online Request', 'Approve Vouchers', 'Complaint / Help Request', 'Feedback / Appreciation Report', 'Maturity Alert'] },
-  { name: 'TRANSACTION REPORTS', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>, subItems: ['Cheque Reconciliation Report', 'Transactions Report', 'Renewal From App'] },
-  { name: 'SERVICE CENTER', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>, subItems: ['Add Credit Service Center', 'View Credit Request', 'Credit History'] },
-  { name: 'CUSTOMER ENROLLMENT', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg> },
-  { name: 'BANKING', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg> },
-  { name: 'LOAN', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg> },
-  { name: 'PRINT', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> },
-  { name: 'ACCOUNTING', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg> },
-  { name: 'REPORT', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>, subItems: ['Customer Complaint / Help Report'] },
-  { name: 'PIGMY', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>, subItems: ['Upload Pigmy File', 'Download Pigmy File', 'View Paid Record'] },
-  { name: 'TOOLS', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>, subItems: ['Broadcast', 'ADD Standing Instruction', 'Communication', 'Notes', 'Manage Calendar', 'Manage Events'] },
-  { name: 'STAFF ENROLLMENT', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> }
+  { name: 'TRANSACTION', color: '#1d4ed8', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, subItems: ['Cash Deposit', 'Cash Withdrawal', 'Approval Transactions', 'Rejected Transactions', 'Apply Now', 'Cheque Reconciliation', 'Request For Credit', 'Transfer', 'View Request For NEFT', 'Request For NEFT', 'Renewals', 'Loan Disbursement Payment', 'Loan Disbursement Interest Type', 'Loan Dis. Int. And Pro.Fee Type', 'Service Charge Deduct', 'Print Transaction', 'MIS Interest Pay', 'Loan Emi Payment', 'Add Staff E-Wallet', 'Bulk Deposit', 'Deposit EMI Receivable Today', 'Loan EMI Receivable Today', 'Online Request', 'Approve Vouchers', 'Complaint / Help Request', 'Feedback / Appreciation Report', 'Maturity Alert'] },
+  { name: 'TRANSACTION REPORTS', color: '#4338ca', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>, subItems: ['Cheque Reconciliation Report', 'Transactions Report', 'Renewal From App'] },
+  { name: 'SERVICE CENTER', color: '#047857', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>, subItems: ['Add Credit Service Center', 'View Credit Request', 'Credit History'] },
+  { name: 'CUSTOMER ENROLLMENT', color: '#b45309', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg> },
+  { name: 'BANKING', color: '#6d28d9', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg> },
+  { name: 'LOAN', color: '#be185d', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg> },
+  { name: 'PRINT', color: '#0e7490', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg> },
+  { name: 'ACCOUNTING', color: '#c2410c', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg> },
+  { name: 'REPORT', color: '#b91c1c', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>, subItems: ['Customer Complaint / Help Report'] },
+  { name: 'PIGMY', color: '#4d7c0f', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>, subItems: ['Upload Pigmy File', 'Download Pigmy File', 'View Paid Record'] },
+  { name: 'TOOLS', color: '#6d28d9', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>, subItems: ['Broadcast', 'ADD Standing Instruction', 'Communication', 'Notes', 'Manage Calendar', 'Manage Events', 'Manage Holidays'] },
+  { name: 'STAFF ENROLLMENT', color: '#047857', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> }
 ];
 
 const DASHBOARD_PANELS = [
   {
     title: 'COMPANY',
-    color: '#000c3b',
+    color: '#1d4ed8', // Darker Blue
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>,
     items: [
       'Profile', 'Add Promoter', 'View Promoter', 'Create Financial Year', 
@@ -77,7 +84,7 @@ const DASHBOARD_PANELS = [
   },
   {
     title: 'MANAGE MASTER',
-    color: '#ff0000',
+    color: '#b91c1c', // Darker Red
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>,
     items: [
       'Manage Service Tax', 'Update Bank Details', 'Create State', 'View/Update State', 
@@ -88,7 +95,7 @@ const DASHBOARD_PANELS = [
   },
   {
     title: 'MANAGE BRANCH',
-    color: 'green',
+    color: '#047857', // Darker Emerald
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>,
     items: [
       'Create Branch', 'View/Update Branch', 'IP Wise Enable/Disable', 
@@ -98,7 +105,7 @@ const DASHBOARD_PANELS = [
   },
   {
     title: 'REQUEST',
-    color: '#0000ff',
+    color: '#6d28d9', // Darker Violet
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>,
     items: [
       'Add Balance Request', 'Online Request', 'Complaint / Help Request', 
@@ -110,7 +117,7 @@ const DASHBOARD_PANELS = [
   },
   {
     title: 'TOOLS',
-    color: '#4b0082',
+    color: '#b45309', // Darker Amber
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>,
     items: [
       'Communication', 'Notes', 'Manage Calendar', 'Manage Events', 'Manage Holidays'
@@ -119,12 +126,12 @@ const DASHBOARD_PANELS = [
 ];
 
 const SERVICE_CENTER_TOP_NAV = [
-  { name: 'TRANSACTION', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, subItems: ['Cash Deposit', 'Cash Withdrawal', 'Approval Transactions', 'Rejected Transactions', 'Apply Now', 'Request For Credit', 'Transfer', 'Request For NEFT', 'Renewals', 'Loan Disbursement Payment', 'Loan Emi Payment', 'Online Request'] },
-  { name: 'TRANSACTION REPORTS', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>, subItems: ['Transactions Report'] },
-  { name: 'CUSTOMER ENROLLMENT', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg> },
-  { name: 'BANKING', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg> },
-  { name: 'REPORT', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> },
-  { name: 'TOOLS', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>, subItems: ['Broadcast', 'Communication', 'Notes', 'Manage Calendar', 'Manage Events'] }
+  { name: 'TRANSACTION', color: '#1d4ed8', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>, subItems: ['Cash Deposit', 'Cash Withdrawal', 'Approval Transactions', 'Rejected Transactions', 'Apply Now', 'Request For Credit', 'Transfer', 'Request For NEFT', 'Renewals', 'Loan Disbursement Payment', 'Loan Emi Payment', 'Online Request'] },
+  { name: 'TRANSACTION REPORTS', color: '#4338ca', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>, subItems: ['Transactions Report'] },
+  { name: 'CUSTOMER ENROLLMENT', color: '#047857', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg> },
+  { name: 'BANKING', color: '#b45309', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg> },
+  { name: 'REPORT', color: '#b91c1c', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> },
+  { name: 'TOOLS', color: '#6d28d9', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>, subItems: ['Broadcast', 'Communication', 'Notes', 'Manage Calendar', 'Manage Events'] }
 ];
 
 function Dashboard({ user, onLogout }) {
@@ -313,46 +320,91 @@ function Dashboard({ user, onLogout }) {
         <div 
           className={`nav-item ${activeView === 'Dashboard' ? 'active' : ''}`}
           onClick={() => handleNavigate('Dashboard')}
+          style={{
+            ...(activeView === 'Dashboard' && { backgroundColor: '#e0e7ff', color: '#4338ca', boxShadow: '0 4px 10px rgba(67, 56, 202, 0.15)' })
+          }}
+          onMouseEnter={(e) => {
+            if (activeView !== 'Dashboard') {
+              e.currentTarget.style.backgroundColor = '#e0e7ff';
+              e.currentTarget.style.color = '#4338ca';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (activeView !== 'Dashboard') {
+              e.currentTarget.style.backgroundColor = '';
+              e.currentTarget.style.color = '';
+            }
+          }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <div style={{ color: activeView === 'Dashboard' ? '#4338ca' : '#4f46e5', display: 'flex', alignItems: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </div>
           <span>Dashboard</span>
         </div>
-        {getTopNav().map(item => (
-          <div 
-            key={item.name} 
-            className={`nav-item ${activeView === item.name || (item.subItems && item.subItems.includes(activeView)) ? 'active' : ''}`}
-            onClick={(e) => {
-              if (!item.subItems) {
-                handleNavigate(item.name);
-              } else {
-                e.currentTarget.classList.toggle('mobile-dropdown-open');
-              }
-            }}
-          >
-            {item.icon}
-            <span style={isBranchUser ? { fontSize: '0.75rem', fontWeight: 'bold' } : {}}>{item.name}</span>
-            {item.subItems && (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginLeft: '4px' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
-            )}
-            
-            {item.subItems && (
-              <div className="nav-dropdown">
-                {item.subItems.map(sub => (
-                  <div 
-                    key={sub} 
-                    className="nav-dropdown-item"
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      handleNavigate(sub); 
-                    }}
-                  >
-                    {sub}
-                  </div>
-                ))}
+        {getTopNav().map(item => {
+          const isActive = activeView === item.name || (item.subItems && item.subItems.includes(activeView));
+          return (
+            <div 
+              key={item.name} 
+              className={`nav-item ${isActive ? 'active' : ''}`}
+              onClick={(e) => {
+                if (!item.subItems) {
+                  handleNavigate(item.name);
+                } else {
+                  e.currentTarget.classList.toggle('mobile-dropdown-open');
+                }
+              }}
+              style={{
+                ...(isActive && { backgroundColor: `${item.color}15`, color: item.color, boxShadow: `0 4px 10px ${item.color}30` })
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = `${item.color}15`;
+                  e.currentTarget.style.color = item.color;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = '';
+                  e.currentTarget.style.color = '';
+                }
+              }}
+            >
+              <div style={{ color: item.color, display: 'flex', alignItems: 'center' }}>
+                {item.icon}
               </div>
-            )}
-          </div>
-        ))}
+              <span style={isBranchUser ? { fontSize: '0.75rem', fontWeight: 'bold' } : {}}>{item.name}</span>
+              {item.subItems && (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginLeft: '4px' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+              )}
+              
+              {item.subItems && (
+                <div className="nav-dropdown">
+                  {item.subItems.map(sub => (
+                    <div 
+                      key={sub} 
+                      className="nav-dropdown-item"
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        handleNavigate(sub); 
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = `${item.color}15`;
+                        e.currentTarget.style.color = item.color;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '';
+                        e.currentTarget.style.color = '';
+                      }}
+                    >
+                      {sub}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </nav>
 
       <main className="main-content-area" style={{ flex: 1, overflowY: 'auto', padding: (isBranchUser || isServiceCenterUser) && activeView === 'Dashboard' ? '0' : '1.5rem', display: 'flex', flexDirection: 'column', backgroundColor: 'transparent' }}>
@@ -366,11 +418,13 @@ function Dashboard({ user, onLogout }) {
             <div className="panels-grid">
               {getPanels().map(panel => {
                 return (
-                  <div key={panel.title} className="dashboard-panel">
-                    <div className="panel-header" style={{ cursor: 'default' }}>
+                  <div key={panel.title} className="dashboard-panel" style={{ borderTopColor: panel.color }}>
+                    <div className="panel-header" style={{ cursor: 'default', background: `linear-gradient(to right, ${panel.color}15, transparent)` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {panel.icon}
-                        <span>{panel.title}</span>
+                        <div style={{ color: panel.color, display: 'flex', alignItems: 'center' }}>
+                          {panel.icon}
+                        </div>
+                        <span style={{ color: '#0f172a' }}>{panel.title}</span>
                       </div>
                       <div className="panel-options" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" onClick={(e) => { e.stopPropagation(); /* 3 dot options logic */ }}><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
@@ -378,7 +432,21 @@ function Dashboard({ user, onLogout }) {
                     </div>
                     <div className="panel-body">
                       {panel.items.map(item => (
-                        <div key={item} className="panel-item" onClick={() => handleNavigate(item)}>
+                        <div 
+                          key={item} 
+                          className="panel-item" 
+                          onClick={() => handleNavigate(item)}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = `${panel.color}15`;
+                            e.currentTarget.style.color = panel.color;
+                            e.currentTarget.style.transform = 'translateX(4px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '';
+                            e.currentTarget.style.color = '';
+                            e.currentTarget.style.transform = '';
+                          }}
+                        >
                           {item}
                         </div>
                       ))}
@@ -426,6 +494,13 @@ function Dashboard({ user, onLogout }) {
                    (activeView === 'Customer Feedback Report' || activeView === 'Feedback / Appreciation Report') ? <CustomerFeedback /> :
                    activeView === 'Create Financial Year' ? <CreateFinancialYear /> :
                    activeView === 'View/Update Financial Year' ? <ViewUpdateFinancialYear /> :
+                   (activeView === 'Verify Member Kyc' || activeView?.toLowerCase() === 'verify member kyc') ? <VerifyMemberKYC /> :
+                   (activeView === 'Pending Upload Document For Approval' || activeView?.toLowerCase() === 'pending upload document for approval') ? <PendingUploadDocument /> :
+                   (activeView === 'Member Request Enquiry' || activeView?.toLowerCase() === 'member request enquiry') ? <MemberRequestEnquiry /> :
+                   (activeView === 'View Share Application/Request' || activeView?.toLowerCase() === 'view share application/request') ? <ViewShareApplication /> :
+                   (activeView === 'Manage Calendar' || activeView?.toLowerCase() === 'manage calendar' || activeView?.toLowerCase() === 'manage-calendar') ? <ManageCalendar onNavigate={handleNavigate} /> :
+                   (activeView === 'Manage Events' || activeView?.toLowerCase() === 'manage events' || activeView?.toLowerCase() === 'manage-events') ? <ManageEvents onNavigate={handleNavigate} /> :
+                   (activeView === 'Manage Holidays' || activeView?.toLowerCase() === 'manage holidays' || activeView?.toLowerCase() === 'manage-holidays' || activeView === 'Holiday List' || activeView?.toLowerCase() === 'holiday list' || activeView?.toLowerCase() === 'holiday-list') ? <ManageHolidays onNavigate={handleNavigate} /> :
                    activeView === 'Lock Setting' ? <LockSetting /> :
                    activeView === 'EOD/BOD' ? <EodBod /> :
                    activeView === 'View Login Details' ? <ViewLoginDetails /> :

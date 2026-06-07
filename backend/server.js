@@ -460,6 +460,73 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS member_requests (
+      id SERIAL PRIMARY KEY,
+      request_no VARCHAR(255) UNIQUE,
+      request_date DATE DEFAULT CURRENT_DATE,
+      branch_id INTEGER REFERENCES branches(id) ON DELETE SET NULL,
+      service_center_id INTEGER REFERENCES service_centers(id) ON DELETE SET NULL,
+      member_id VARCHAR(255),
+      member_name VARCHAR(255),
+      record_type VARCHAR(255),
+      request_type VARCHAR(255),
+      request_details TEXT,
+      created_by VARCHAR(255),
+      status VARCHAR(50) DEFAULT 'Pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS share_applications (
+      id SERIAL PRIMARY KEY,
+      application_no VARCHAR(255) UNIQUE,
+      application_date DATE DEFAULT CURRENT_DATE,
+      branch_id INTEGER REFERENCES branches(id) ON DELETE SET NULL,
+      member_id VARCHAR(255),
+      member_name VARCHAR(255),
+      share_type VARCHAR(255),
+      no_of_shares INTEGER,
+      amount NUMERIC(15,2),
+      pay_mode VARCHAR(50),
+      status VARCHAR(50) DEFAULT 'Pending',
+      created_by VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS calendar_events (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      event_date DATE NOT NULL,
+      event_color VARCHAR(50) DEFAULT '#2563eb',
+      created_by VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS company_events (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      event_date DATE NOT NULL,
+      event_time VARCHAR(20),
+      venue VARCHAR(255),
+      organizer VARCHAR(255),
+      event_type VARCHAR(100) DEFAULT 'General',
+      status VARCHAR(50) DEFAULT 'Upcoming',
+      created_by VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS holidays (
+      id SERIAL PRIMARY KEY,
+      holiday_name VARCHAR(255) NOT NULL,
+      holiday_date DATE NOT NULL,
+      holiday_type VARCHAR(100) DEFAULT 'Public',
+      description TEXT,
+      status VARCHAR(50) DEFAULT 'Active',
+      created_by VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
     console.log("Database schema initialized successfully.");
   } catch (error) {
     console.error("Error initializing database schema:", error);
@@ -575,6 +642,92 @@ app.post('/api/customers', authenticateToken, async (req, res) => {
     const result = await pool.query(sql, [cifNumber, firstName, lastName, dob, gender, aadharNumber, panNumber, phoneNumber, email, address, accountType, detailsStr]);
     const id = result.rows[0].id;
     res.json({ success: true, cifNumber, id, message: 'Customer created successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/kyc/verify/:memberId', authenticateToken, async (req, res) => {
+  const { memberId } = req.params;
+  const { documentId } = req.query;
+  
+  try {
+    const { rows } = await pool.query("SELECT * FROM customers WHERE cif_number = $1", [memberId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Member ID not found' });
+    }
+    const customer = rows[0];
+    let details = {};
+    try { details = JSON.parse(customer.details) || {}; } catch(e) {}
+    
+    let isVerified = false;
+    let documentName = '';
+    
+    if (documentId === '32') { // Aadhar
+      documentName = 'Aadhar Card';
+      if (customer.aadhar_number || details.aadhar || details.kycAadhaar) isVerified = true;
+    } else if (documentId === '7') { // PAN
+      documentName = 'PAN Card';
+      if (customer.pan_number || details.panNo || details.kycPan) isVerified = true;
+    } else if (documentId === '10') { // Driving License
+      documentName = 'Driving License';
+      if (details.kycDriving || details.drivingLicense) isVerified = true;
+    } else if (documentId === '6') { // Voter ID
+      documentName = 'Voter ID Card';
+      if (details.kycVoterId || details.voterId) isVerified = true;
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid Document ID' });
+    }
+    
+    if (isVerified) {
+      res.json({ success: true, message: `KYC for ${documentName} is Verified`, memberName: `${customer.first_name} ${customer.last_name}` });
+    } else {
+      res.json({ success: false, message: `${documentName} details not found for this member.` });
+    }
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/kyc/pending-documents', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT id, cif_number, first_name, last_name, phone_number, created_at, aadhar_number, pan_number, details FROM customers ORDER BY created_at DESC");
+    const formattedData = rows.map((customer, index) => {
+      let details = {};
+      try { details = JSON.parse(customer.details) || {}; } catch(e) {}
+      
+      let uploadedKYC = [];
+      if (details.kycPassport) uploadedKYC.push('Passport');
+      if (details.kycVoterId || details.voterId) uploadedKYC.push('Voter ID');
+      if (details.kycPan || customer.pan_number || details.panNo) uploadedKYC.push('PAN Card');
+      if (details.kycAadhaar || customer.aadhar_number || details.aadhar) uploadedKYC.push('Aadhaar Card');
+      if (details.kycDriving || details.drivingLicense) uploadedKYC.push('Driving License');
+      if (details.kycRation) uploadedKYC.push('Ration Card');
+      if (details.kycElec) uploadedKYC.push('Electricity Bill');
+      // Add Photo and Signature as they seem to be standard
+      uploadedKYC.unshift('Photo', 'Signature1'); 
+      
+      // Remove duplicates
+      uploadedKYC = [...new Set(uploadedKYC)];
+      
+      return {
+        id: customer.id,
+        slNo: index + 1,
+        memberId: customer.cif_number,
+        name: `${customer.first_name} ${customer.last_name}`.trim(),
+        regDate: new Date(customer.created_at || Date.now()).toLocaleDateString('en-GB'),
+        contactNo: customer.phone_number || 'N/A',
+        totalKyc: uploadedKYC.length, 
+        uploadedKyc: uploadedKYC.join(','),
+        uploadedKycCount: uploadedKYC.length,
+        status: uploadedKYC.length >= 4 ? 'APPROVED' : 'Pending',
+      };
+    });
+    
+    res.json(formattedData);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -1426,6 +1579,224 @@ app.post('/api/customer-feedback/search', authenticateToken, async (req, res) =>
     console.error(err);
     res.status(500).json({ success: false, message: err.message });
   }
+});
+
+// Member Requests Enquiry
+app.post('/api/member-requests/search', authenticateToken, async (req, res) => {
+  try {
+    const { branch_id, service_center_id, search_field, search_val, from_date, to_date, status } = req.body;
+    let query = `
+      SELECT m.*, b.name as branch_name, s.name as service_center_name 
+      FROM member_requests m
+      LEFT JOIN branches b ON m.branch_id = b.id
+      LEFT JOIN service_centers s ON m.service_center_id = s.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    // Enforce branch_id restriction for Branch Users
+    if (req.user.role === 'Branch User') {
+      query += ` AND m.branch_id = $${paramIndex++}`;
+      params.push(req.user.branchId);
+    } else if (branch_id && branch_id !== '0') {
+      query += ` AND m.branch_id = $${paramIndex++}`;
+      params.push(branch_id);
+    }
+
+    if (service_center_id && service_center_id !== '0') {
+      query += ` AND m.service_center_id = $${paramIndex++}`;
+      params.push(service_center_id);
+    }
+
+    if (search_field && search_val) {
+      if (search_field === '1') { query += ` AND m.member_id ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+      else if (search_field === '2') { query += ` AND m.member_name ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+      else if (search_field === '3') { query += ` AND m.request_no ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+    }
+
+    if (from_date) { query += ` AND m.request_date >= $${paramIndex++}`; params.push(from_date); }
+    if (to_date) { query += ` AND m.request_date <= $${paramIndex++}`; params.push(to_date); }
+    
+    if (status && status !== '6') {
+      let statusStr = 'Pending';
+      if (status === '0') statusStr = 'Pending'; // "Not Approved" in UI
+      if (status === '1') statusStr = 'Approved';
+      if (status === '3') statusStr = 'Reject';
+      query += ` AND m.status = $${paramIndex++}`;
+      params.push(statusStr);
+    }
+
+    query += ` ORDER BY m.request_date DESC LIMIT 500`;
+
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Share Applications
+app.post('/api/share-applications/search', authenticateToken, async (req, res) => {
+  try {
+    const { branch_id, search_field, search_val, from_date, to_date, status } = req.body;
+    let query = `
+      SELECT s.*, b.name as branch_name 
+      FROM share_applications s
+      LEFT JOIN branches b ON s.branch_id = b.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    if (req.user.role === 'Branch User') {
+      query += ` AND s.branch_id = $${paramIndex++}`;
+      params.push(req.user.branchId);
+    } else if (branch_id && branch_id !== '0') {
+      query += ` AND s.branch_id = $${paramIndex++}`;
+      params.push(branch_id);
+    }
+
+    if (search_field && search_val) {
+      if (search_field === '1') { query += ` AND s.member_id ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+      else if (search_field === '2') { query += ` AND s.member_name ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+    }
+
+    if (from_date) { query += ` AND s.application_date >= $${paramIndex++}`; params.push(from_date); }
+    if (to_date) { query += ` AND s.application_date <= $${paramIndex++}`; params.push(to_date); }
+    
+    if (status && status !== '6') {
+      let statusStr = 'Pending';
+      if (status === '0') statusStr = 'Pending';
+      if (status === '1') statusStr = 'Approved';
+      if (status === '3') statusStr = 'Reject';
+      query += ` AND s.status = $${paramIndex++}`;
+      params.push(statusStr);
+    }
+
+    query += ` ORDER BY s.application_date DESC LIMIT 500`;
+
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Calendar Events
+app.get('/api/calendar-events', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM calendar_events ORDER BY event_date ASC");
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/calendar-events', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, event_date, event_color } = req.body;
+    const { rows } = await pool.query(
+      "INSERT INTO calendar_events (title, description, event_date, event_color, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [title, description, event_date, event_color || '#2563eb', req.user.username]
+    );
+    res.json({ success: true, event: rows[0], message: 'Event added successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/calendar-events/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query("DELETE FROM calendar_events WHERE id = $1", [id]);
+    res.json({ success: true, message: 'Event deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ===================== Company Events =====================
+app.get('/api/events', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM company_events ORDER BY event_date ASC");
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/events', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, event_date, event_time, venue, organizer, event_type } = req.body;
+    const { rows } = await pool.query(
+      `INSERT INTO company_events (title, description, event_date, event_time, venue, organizer, event_type, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [title, description, event_date, event_time, venue, organizer, event_type || 'General', req.user.username]
+    );
+    res.json({ success: true, event: rows[0], message: 'Event created successfully' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/events/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, event_date, event_time, venue, organizer, event_type, status } = req.body;
+    await pool.query(
+      `UPDATE company_events SET title=$1, description=$2, event_date=$3, event_time=$4, venue=$5, organizer=$6, event_type=$7, status=$8 WHERE id=$9`,
+      [title, description, event_date, event_time, venue, organizer, event_type, status, id]
+    );
+    res.json({ success: true, message: 'Event updated successfully' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/events/:id', authenticateToken, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM company_events WHERE id = $1", [req.params.id]);
+    res.json({ success: true, message: 'Event deleted successfully' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ===================== Holidays =====================
+app.get('/api/holidays', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM holidays ORDER BY holiday_date ASC");
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/holidays', authenticateToken, async (req, res) => {
+  try {
+    const { holiday_name, holiday_date, holiday_type, description } = req.body;
+    const { rows } = await pool.query(
+      `INSERT INTO holidays (holiday_name, holiday_date, holiday_type, description, created_by)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [holiday_name, holiday_date, holiday_type || 'Public', description, req.user.username]
+    );
+    res.json({ success: true, holiday: rows[0], message: 'Holiday added successfully' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/holidays/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { holiday_name, holiday_date, holiday_type, description, status } = req.body;
+    await pool.query(
+      `UPDATE holidays SET holiday_name=$1, holiday_date=$2, holiday_type=$3, description=$4, status=$5 WHERE id=$6`,
+      [holiday_name, holiday_date, holiday_type, description, status, id]
+    );
+    res.json({ success: true, message: 'Holiday updated successfully' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/holidays/:id', authenticateToken, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM holidays WHERE id = $1", [req.params.id]);
+    res.json({ success: true, message: 'Holiday deleted successfully' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // Unify Requests for "Assign Online Request"
