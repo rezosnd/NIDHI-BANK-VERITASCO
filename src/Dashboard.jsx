@@ -38,6 +38,7 @@ import ViewShareApplication from './ViewShareApplication';
 import ManageCalendar from './ManageCalendar';
 import ManageEvents from './ManageEvents';
 import ManageHolidays from './ManageHolidays';
+import ManageRelationship from './ManageRelationship';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
 import './FandomLogin.css';
@@ -501,6 +502,7 @@ function Dashboard({ user, onLogout }) {
                    (activeView === 'Manage Calendar' || activeView?.toLowerCase() === 'manage calendar' || activeView?.toLowerCase() === 'manage-calendar') ? <ManageCalendar onNavigate={handleNavigate} /> :
                    (activeView === 'Manage Events' || activeView?.toLowerCase() === 'manage events' || activeView?.toLowerCase() === 'manage-events') ? <ManageEvents onNavigate={handleNavigate} /> :
                    (activeView === 'Manage Holidays' || activeView?.toLowerCase() === 'manage holidays' || activeView?.toLowerCase() === 'manage-holidays' || activeView === 'Holiday List' || activeView?.toLowerCase() === 'holiday list' || activeView?.toLowerCase() === 'holiday-list') ? <ManageHolidays onNavigate={handleNavigate} /> :
+                   (activeView === 'Relationship' || activeView?.toLowerCase() === 'relationship') ? <ManageRelationship onNavigate={handleNavigate} /> :
                    activeView === 'Lock Setting' ? <LockSetting /> :
                    activeView === 'EOD/BOD' ? <EodBod /> :
                    activeView === 'View Login Details' ? <ViewLoginDetails /> :

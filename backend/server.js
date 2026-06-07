@@ -527,6 +527,30 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS relationships (
+      id SERIAL PRIMARY KEY,
+      code VARCHAR(255) NOT NULL,
+      description VARCHAR(255) NOT NULL,
+      created_by VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+    
+    // Seed default relationships if empty
+    const { rows: relRows } = await pool.query("SELECT count(*) as count FROM relationships");
+    if (parseInt(relRows[0].count) === 0) {
+        const defaults = [
+            ['Mother', 'Mother'], ['Father', 'Father'], ['Son', 'Son'], ['Daughter', 'Daughter'],
+            ['Son-in-Law', 'Son-in-Law'], ['Husband', 'Husband'], ['Sister', 'Sister'],
+            ['other', 'others'], ['Wife', 'Wife'], ['Grand D', 'Grand daughter'],
+            ['Grand son', 'Grand son'], ['BROUTHER', 'BROUTHER'], ['F in law', 'Father in law'],
+            ['D in law', 'Daughter in Law'], ['NIECE', 'NIECE'], ['NEPHEW', 'NEPHEW'],
+            ['M in law', 'Mother in law'], ['Cousin', 'Cousin']
+        ];
+        for (const [code, desc] of defaults) {
+            await pool.query("INSERT INTO relationships (code, description) VALUES ($1, $2)", [code, desc]);
+        }
+    }
+
     console.log("Database schema initialized successfully.");
   } catch (error) {
     console.error("Error initializing database schema:", error);
@@ -2325,6 +2349,62 @@ app.put('/api/online-requests/:id/approve', authenticateToken, async (req, res) 
 
 
 // (Duplicate /api/bank-details alias removed — use /api/bankdetails instead)
+
+// ==========================================
+// Relationships API
+// ==========================================
+
+app.get('/api/relationships', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM relationships ORDER BY id ASC");
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/relationships', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { code, description } = req.body;
+  try {
+    const { rows } = await pool.query(
+      "INSERT INTO relationships (code, description, created_by) VALUES ($1, $2, $3) RETURNING *",
+      [code, description, req.user.username]
+    );
+    res.json({ success: true, relationship: rows[0], message: 'Relationship added successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.put('/api/relationships/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { code, description } = req.body;
+  try {
+    const { rows } = await pool.query(
+      "UPDATE relationships SET code = $1, description = $2 WHERE id = $3 RETURNING *",
+      [code, description, id]
+    );
+    if (rows.length === 0) return res.status(404).json({ success: false, message: 'Relationship not found' });
+    res.json({ success: true, relationship: rows[0], message: 'Relationship updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.delete('/api/relationships/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rowCount } = await pool.query("DELETE FROM relationships WHERE id = $1", [id]);
+    if (rowCount === 0) return res.status(404).json({ success: false, message: 'Relationship not found' });
+    res.json({ success: true, message: 'Relationship deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
 // Serve frontend in production
 app.use(express.static(path.join(__dirname, '../dist')));
