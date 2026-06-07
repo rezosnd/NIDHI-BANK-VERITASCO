@@ -20,8 +20,8 @@ const RowField = ({ label, req, children }) => (
 
 const inputStyle = {
   width: '100%', padding: '4px 8px', fontSize: '12px', height: '26px', 
-  border: '1px solid #cbd5e1', borderRadius: '3px', color: '#1e293b', 
-  backgroundColor: '#fff', outline: 'none', transition: 'border-color 0.15s ease'
+  border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '3px', color: '#1e293b', 
+  backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', outline: 'none', transition: 'border-color 0.15s ease'
 };
 
 function CreateFinancialYear() {
@@ -122,7 +122,7 @@ function CreateFinancialYear() {
           </div>
         )}
 
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <SectionHeader title="Create Financial Year" />
           
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 600px)', gap: '16px' }}>

@@ -79,7 +79,7 @@ function ViewUpdateFinancialYear() {
           </div>
         )}
 
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '6px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '11px' }}>
               <thead>
@@ -102,7 +102,7 @@ function ViewUpdateFinancialYear() {
                     <tr 
                       key={fy.id} 
                       style={{ 
-                        borderBottom: '1px solid #e2e8f0', 
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.4)', 
                         backgroundColor: fy.is_active ? '#f0fdf4' : (index % 2 === 0 ? '#ffffff' : '#f8fafc'),
                         transition: 'background-color 0.2s ease'
                       }}
@@ -133,7 +133,7 @@ function ViewUpdateFinancialYear() {
           </div>
           
           {financialYears.length > 0 && (
-            <div style={{ padding: '16px', backgroundColor: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ padding: '16px', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid rgba(255, 255, 255, 0.4)', display: 'flex', justifyContent: 'flex-end' }}>
               <button 
                 onClick={handleActivate}
                 disabled={!selectedId || saving || financialYears.find(f => f.id === selectedId)?.is_active}

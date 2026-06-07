@@ -25,32 +25,38 @@ export default function NewsTicker({ receiverType }) {
 
   return (
     <div style={{
-      width: '100%',
-      backgroundColor: '#1e293b',
-      color: '#ffffff',
+      margin: '0.5rem 1.5rem',
+      borderRadius: '16px',
+      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+      backdropFilter: 'blur(32px)',
+      WebkitBackdropFilter: 'blur(32px)',
+      border: '1px solid rgba(255, 255, 255, 0.4)',
+      borderTop: '1px solid rgba(255, 255, 255, 0.9)',
+      borderLeft: '1px solid rgba(255, 255, 255, 0.9)',
+      boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05)',
+      color: '#1e293b',
       display: 'flex',
       alignItems: 'center',
-      padding: '8px 16px',
+      padding: '8px 12px',
       overflow: 'hidden',
       position: 'relative',
       zIndex: 10,
-      borderBottom: '2px solid #0ea5e9'
     }}>
       <div style={{
-        backgroundColor: '#ef4444',
+        background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
         color: 'white',
         fontWeight: '800',
-        fontSize: '0.75rem',
-        padding: '4px 12px',
-        borderRadius: '4px',
+        fontSize: '0.65rem',
+        padding: '4px 10px',
+        borderRadius: '10px',
         textTransform: 'uppercase',
         letterSpacing: '1px',
         marginRight: '16px',
         flexShrink: 0,
         zIndex: 2,
-        boxShadow: '0 2px 4px rgba(239,68,68,0.3)'
+        boxShadow: '0 4px 10px rgba(239,68,68,0.3)'
       }}>
-        Latest News
+        UPDATE
       </div>
       
       <div style={{
@@ -61,7 +67,7 @@ export default function NewsTicker({ receiverType }) {
       }}>
         <div style={{
           display: 'inline-block',
-          animation: 'scrollNews 30s linear infinite',
+          animation: 'scrollNews 40s linear infinite',
           paddingLeft: '100%'
         }}>
           <style>
@@ -71,17 +77,17 @@ export default function NewsTicker({ receiverType }) {
                 100% { transform: translateX(-100%); }
               }
               .news-item:hover {
-                color: #38bdf8;
+                color: #2563eb;
                 cursor: pointer;
               }
             `}
           </style>
           {news.map((n, i) => (
             <span key={n.id} style={{ marginRight: '60px', fontSize: '0.85rem', fontWeight: '500', display: 'inline-flex', alignItems: 'center' }}>
-              <span style={{ color: '#0ea5e9', marginRight: '8px', fontSize: '1.2rem' }}>•</span>
+              <span style={{ color: '#ef4444', marginRight: '8px', fontSize: '1.2rem' }}>•</span>
               <span className="news-item">
-                <strong style={{ color: '#bae6fd', marginRight: '6px' }}>{n.title}:</strong>
-                {n.content}
+                <strong style={{ color: '#0f172a', marginRight: '6px' }}>{n.title}:</strong>
+                <span style={{ color: '#334155' }}>{n.content}</span>
               </span>
             </span>
           ))}

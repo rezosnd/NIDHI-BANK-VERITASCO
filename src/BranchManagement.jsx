@@ -170,8 +170,8 @@ function BranchManagement({ view }) {
   };
 
   return (
-    <div style={{ backgroundColor: '#ffffff', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)', borderTop: '4px solid var(--primary)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+    <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)', borderTop: '4px solid var(--primary)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
         <h3 style={{ color: '#0f172a', margin: 0, fontSize: '1.25rem', fontWeight: '700' }}>Branch Management Console</h3>
         <button 
           onClick={() => {
@@ -188,7 +188,7 @@ function BranchManagement({ view }) {
       </div>
 
       {showForm && (
-        <div style={{ marginBottom: '2.5rem', padding: '2rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+        <div style={{ marginBottom: '2.5rem', padding: '2rem', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.6)' }}>
           
           {generatedCredentials ? (
             <div style={{ padding: '2rem', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.1)' }}>
@@ -201,16 +201,16 @@ function BranchManagement({ view }) {
                 <strong style={{ color: '#dc2626' }}>⚠️ You will not be able to view this password again after closing this window.</strong>
               </p>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', border: '1px dashed #93c5fd' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', padding: '1.5rem', borderRadius: '8px', border: '1px dashed #93c5fd' }}>
                 <div>
                   <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 0.4rem 0', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px' }}>Branch Username</p>
-                  <p style={{ fontSize: '1.5rem', color: 'var(--primary)', fontWeight: '800', margin: 0, userSelect: 'all', fontFamily: 'monospace', backgroundColor: '#f1f5f9', padding: '0.5rem 1rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                  <p style={{ fontSize: '1.5rem', color: 'var(--primary)', fontWeight: '800', margin: 0, userSelect: 'all', fontFamily: 'monospace', backgroundColor: 'rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', padding: '0.5rem 1rem', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.6)' }}>
                     {generatedCredentials.username}
                   </p>
                 </div>
                 <div>
                   <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0 0 0.4rem 0', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.5px' }}>Secure Password</p>
-                  <p style={{ fontSize: '1.5rem', color: 'var(--primary)', fontWeight: '800', margin: 0, userSelect: 'all', fontFamily: 'monospace', backgroundColor: '#f1f5f9', padding: '0.5rem 1rem', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                  <p style={{ fontSize: '1.5rem', color: 'var(--primary)', fontWeight: '800', margin: 0, userSelect: 'all', fontFamily: 'monospace', backgroundColor: 'rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', padding: '0.5rem 1rem', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.6)' }}>
                     {generatedCredentials.password}
                   </p>
                 </div>
@@ -291,7 +291,7 @@ function BranchManagement({ view }) {
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
           <thead>
-            <tr style={{ backgroundColor: '#f1f5f9', textAlign: 'left' }}>
+            <tr style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', textAlign: 'left' }}>
               <th style={{ padding: '1rem', borderBottom: '2px solid #cbd5e1', color: '#475569', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>Code</th>
               <th style={{ padding: '1rem', borderBottom: '2px solid #cbd5e1', color: '#475569', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>Branch Name</th>
               <th style={{ padding: '1rem', borderBottom: '2px solid #cbd5e1', color: '#475569', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>State</th>
@@ -306,7 +306,7 @@ function BranchManagement({ view }) {
               <tr><td colSpan="7" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>No branches found in database. Add one to get started.</td></tr>
             ) : (
               branches.map(branch => (
-                <tr key={branch.id} style={{ borderBottom: '1px solid #e2e8f0', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                <tr key={branch.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.4)', transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                   <td style={{ padding: '1rem', color: '#64748b', fontSize: '0.9rem' }}>{branch.code}</td>
                   <td style={{ padding: '1rem', fontWeight: '600', color: '#0f172a' }}>{branch.name}</td>
                   <td style={{ padding: '1rem', color: '#334155', fontSize: '0.9rem' }}>{branch.state}</td>

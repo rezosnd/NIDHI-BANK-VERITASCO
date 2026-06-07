@@ -96,7 +96,7 @@ function ViewPromoter() {
         </div>
       )}
       <div style={{ padding: '0 1rem' }}>
-        <div style={{ backgroundColor: '#1e293b', padding: '0.6rem 1rem', borderRadius: '6px', marginBottom: '1.5rem', color: '#f8fafc', fontWeight: '600', textAlign: 'center', fontSize: '0.75rem', letterSpacing: '0.5px', textTransform: 'uppercase', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+        <div style={{ backgroundColor: 'rgba(30, 41, 59, 0.85)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', padding: '0.6rem 1rem', borderRadius: '6px', marginBottom: '1.5rem', color: '#f8fafc', fontWeight: '600', textAlign: 'center', fontSize: '0.75rem', letterSpacing: '0.5px', textTransform: 'uppercase', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
         For Working On This Part Please Consult Your Auditor Or Chartered Accountant
       </div>
 
@@ -105,9 +105,9 @@ function ViewPromoter() {
       </div>
 
       <div style={{ overflowX: 'auto', borderRadius: '10px', border: '1px solid var(--border-soft)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', fontSize: '0.875rem' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', fontSize: '0.875rem' }}>
           <thead>
-            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '2px solid var(--border-soft)' }}>
+            <tr style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderBottom: '2px solid var(--border-soft)' }}>
               <th style={{ padding: '1rem', textAlign: 'left', color: 'var(--text-main)', fontWeight: '700' }}>Sl No</th>
               <th style={{ padding: '1rem', textAlign: 'left', color: 'var(--text-main)', fontWeight: '700' }}>Member Id</th>
               <th style={{ padding: '1rem', textAlign: 'left', color: 'var(--text-main)', fontWeight: '700' }}>Member Name</th>
@@ -123,7 +123,7 @@ function ViewPromoter() {
           </thead>
           <tbody>
             {promoters.map((p, idx) => (
-              <tr key={p.id} style={{ borderBottom: '1px solid var(--border-soft)', backgroundColor: idx % 2 === 0 ? 'white' : '#f8fafc', transition: 'background-color 0.2s' }}>
+              <tr key={p.id} style={{ borderBottom: '1px solid var(--border-soft)', backgroundColor: 'rgba(255, 255, 255, 0.3)', transition: 'background-color 0.2s' }}>
                 <td style={{ padding: '1rem' }}>{idx + 1}</td>
                 <td style={{ padding: '1rem', fontWeight: '500', color: 'var(--primary)' }}>{p.member_id}</td>
                 <td style={{ padding: '1rem', fontWeight: '600' }}>{p.member_name}</td>
@@ -143,7 +143,7 @@ function ViewPromoter() {
                     </button>
                   ) : (
                     <button 
-                      style={{ backgroundColor: 'white', color: 'var(--text-main)', border: '1px solid var(--border-soft)', padding: '0.4rem 0.75rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', color: 'var(--text-main)', border: '1px solid var(--border-soft)', padding: '0.4rem 0.75rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
                       onClick={() => handleSetActive(p.id)}
                       onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
                       onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'white'; e.currentTarget.style.borderColor = 'var(--border-soft)'; }}
@@ -174,7 +174,7 @@ function ViewPromoter() {
       
       {editingPromoter && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '2rem', width: '90%', maxWidth: '500px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', borderRadius: '12px', padding: '2rem', width: '90%', maxWidth: '500px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
             <h3 style={{ marginTop: 0, marginBottom: '1.5rem', color: 'var(--text-main)', fontSize: '1.25rem' }}>Edit Promoter</h3>
             <form onSubmit={handleEditSave}>
               <div style={{ marginBottom: '1rem' }}>
@@ -188,7 +188,7 @@ function ViewPromoter() {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--text-main)' }}>Promoter Type</label>
-                  <select name="promoter_type" value={editingPromoter.promoter_type || ''} onChange={handleEditChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-soft)', outline: 'none', backgroundColor: 'white' }}>
+                  <select name="promoter_type" value={editingPromoter.promoter_type || ''} onChange={handleEditChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-soft)', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)' }}>
                     <option value="Promoter">Promoter</option>
                     <option value="Director">Director</option>
                   </select>
@@ -201,14 +201,14 @@ function ViewPromoter() {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--text-main)' }}>Authorize</label>
-                  <select name="authorize" value={editingPromoter.authorize || ''} onChange={handleEditChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-soft)', outline: 'none', backgroundColor: 'white' }}>
+                  <select name="authorize" value={editingPromoter.authorize || ''} onChange={handleEditChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-soft)', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)' }}>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                   </select>
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                <button type="button" onClick={() => setEditingPromoter(null)} style={{ padding: '0.5rem 1rem', border: '1px solid var(--border-soft)', backgroundColor: 'white', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Cancel</button>
+                <button type="button" onClick={() => setEditingPromoter(null)} style={{ padding: '0.5rem 1rem', border: '1px solid var(--border-soft)', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Cancel</button>
                 <button type="submit" style={{ padding: '0.5rem 1.5rem', border: 'none', backgroundColor: 'var(--primary)', color: 'white', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Save Changes</button>
               </div>
             </form>

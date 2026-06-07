@@ -273,13 +273,13 @@ export default function CompanySettings() {
       </label>
       {type === 'textarea' ? (
         <textarea
-          style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', resize: 'vertical', minHeight: '80px', fontFamily: 'inherit' }}
+          style={{ width: '100%', padding: '8px 12px', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', resize: 'vertical', minHeight: '80px', fontFamily: 'inherit' }}
           value={formData[name] || ''}
           onChange={(e) => handleChange(name, e.target.value)}
         />
       ) : type === 'select' ? (
         <select
-          style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', backgroundColor: '#fff' }}
+          style={{ width: '100%', padding: '8px 12px', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)' }}
           value={formData[name] || ''}
           onChange={(e) => handleChange(name, e.target.value)}
         >
@@ -293,13 +293,13 @@ export default function CompanySettings() {
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <input
             type="color"
-            style={{ width: '40px', height: '36px', padding: '0', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: 'pointer' }}
+            style={{ width: '40px', height: '36px', padding: '0', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '4px', cursor: 'pointer' }}
             value={formData[name] || '#ffffff'}
             onChange={(e) => handleChange(name, e.target.value)}
           />
           <input
             type="text"
-            style={{ flex: 1, padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', fontFamily: 'monospace' }}
+            style={{ flex: 1, padding: '8px 12px', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', fontFamily: 'monospace' }}
             value={formData[name] || ''}
             onChange={(e) => handleChange(name, e.target.value)}
           />
@@ -307,7 +307,7 @@ export default function CompanySettings() {
       ) : (
         <input
           type={type}
-          style={{ width: '100%', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '0.9rem', outline: 'none' }}
+          style={{ width: '100%', padding: '8px 12px', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '4px', fontSize: '0.9rem', outline: 'none' }}
           value={formData[name] || ''}
           onChange={(e) => handleChange(name, e.target.value)}
         />
@@ -320,7 +320,7 @@ export default function CompanySettings() {
     <div style={{ padding: '24px', fontFamily: 'Inter, sans-serif', maxWidth: '1200px', margin: '0 auto' }}>
       
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.4)' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0f172a', margin: '0 0 4px 0' }}>Global Admin Settings</h1>
           <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>Manage company profile, application features, and SEO metadata.</p>
@@ -329,7 +329,7 @@ export default function CompanySettings() {
           <button
             onClick={handleRestoreDefaults}
             disabled={isSaving}
-            style={{ padding: '8px 16px', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '0.95rem', fontWeight: '600', cursor: isSaving ? 'not-allowed' : 'pointer', transition: 'background-color 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}
+            style={{ padding: '8px 16px', backgroundColor: 'rgba(255, 255, 255, 0.3)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', color: '#475569', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '6px', fontSize: '0.95rem', fontWeight: '600', cursor: isSaving ? 'not-allowed' : 'pointer', transition: 'background-color 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
             Restore Defaults
@@ -349,9 +349,9 @@ export default function CompanySettings() {
       {isLoading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
           <div className="dotted-loader" style={{ justifyContent: 'center', marginBottom: '16px' }}>
-             <div className="dot" style={{ backgroundColor: '#0052cc' }}></div>
-             <div className="dot" style={{ backgroundColor: '#0052cc' }}></div>
-             <div className="dot" style={{ backgroundColor: '#0052cc' }}></div>
+             <div className="dot" style={{ background: 'linear-gradient(135deg, #2563eb, #1e40af)' }}></div>
+             <div className="dot" style={{ background: 'linear-gradient(135deg, #2563eb, #1e40af)' }}></div>
+             <div className="dot" style={{ background: 'linear-gradient(135deg, #2563eb, #1e40af)' }}></div>
           </div>
           <p>Loading secure global settings...</p>
         </div>
@@ -374,7 +374,7 @@ export default function CompanySettings() {
           <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
         
         {/* Sidebar Navigation */}
-        <div style={{ width: '250px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ width: '250px', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -406,7 +406,7 @@ export default function CompanySettings() {
         </div>
 
         {/* Content Area */}
-        <div style={{ flex: 1, backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '8px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           
           {activeTab === 'basic' && (
             <div>
@@ -427,7 +427,7 @@ export default function CompanySettings() {
             <div>
               <h2 style={{ fontSize: '1.2rem', color: '#0f172a', marginTop: 0, marginBottom: '20px' }}>Contact & Location</h2>
               
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>Phone & Email</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px' }}>Phone & Email</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
                 {renderField({ label: "Header Mobile No", name: "headermobileno" })}
                 {renderField({ label: "Header Email ID", name: "headeremailid" })}
@@ -439,7 +439,7 @@ export default function CompanySettings() {
                 {renderField({ label: "Enquiry Mail", name: "enquirymail" })}
               </div>
 
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>Head Office Address</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>Head Office Address</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
                 {renderField({ label: "Title / Head Office", name: "contactAddressheadoffice" })}
                 {renderField({ label: "Address Line 1", name: "contactAddresscurrentline1" })}
@@ -448,7 +448,7 @@ export default function CompanySettings() {
                 {renderField({ label: "Address Line 4 (Pin/State)", name: "contactAddresscurrentline4" })}
               </div>
 
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>Registered Office Address</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>Registered Office Address</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
                 {renderField({ label: "Title / Reg Office", name: "contactAddressregisteredoffice" })}
                 {renderField({ label: "Address Line 1", name: "contactAddressregisteredofficeline1" })}
@@ -477,7 +477,7 @@ export default function CompanySettings() {
                 {renderField({ label: "Google+ URL (Legacy)", name: "gplusurl" })}
               </div>
 
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', marginTop: '16px' }}>Mobile Application Links</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px', marginTop: '16px' }}>Mobile Application Links</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
                 {renderField({ label: "Collection App APK Path", name: "Collection_Mobile_App_Url" })}
                 {renderField({ label: "Customer App APK Path", name: "Customer_Mobile_App_Url" })}
@@ -489,12 +489,12 @@ export default function CompanySettings() {
             <div>
               <h2 style={{ fontSize: '1.2rem', color: '#0f172a', marginTop: 0, marginBottom: '20px' }}>SEO, Metadata & Legal</h2>
               
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>Legal Pages</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px' }}>Legal Pages</h3>
               {renderField({ label: "Copyright Text", name: "copyrighttxt" })}
               {renderField({ label: "Security Tips (Dashboard)", name: "Security_Tips", type: "textarea" })}
               {renderField({ label: "Privacy Policy", name: "privacy_policy", type: "textarea" })}
               
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>SEO - Index / Homepage</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>SEO - Index / Homepage</h3>
               {renderField({ label: "Index Title", name: "Index_Title" })}
               {renderField({ label: "Index Description", name: "Index_Description", type: "textarea" })}
               {renderField({ label: "Index Keywords", name: "Index_Keywords", type: "textarea" })}
@@ -509,7 +509,7 @@ export default function CompanySettings() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px 24px' }}>
                 {['About', 'Saving', 'Fixed', 'Recurring', 'Pigmy', 'Mis', 'General', 'Property', 'Vehicle', 'Secured', 'Education', 'Business', 'Mortgage', 'Loan-Against-Deposit', 'Gold', 'Contact_Us'].map(prefix => (
                   <React.Fragment key={prefix}>
-                    <div style={{ gridColumn: '1 / -1' }}><h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '8px', marginTop: '16px' }}>{prefix.replace(/-/g, ' ')} Page</h3></div>
+                    <div style={{ gridColumn: '1 / -1' }}><h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '8px', marginTop: '16px' }}>{prefix.replace(/-/g, ' ')} Page</h3></div>
                     {renderField({ label: `${prefix.replace(/-/g, ' ')} Title`, name: `${prefix}_Title` })}
                     {renderField({ label: `${prefix.replace(/-/g, ' ')} Description`, name: `${prefix}_Description`, type: 'textarea' })}
                     {renderField({ label: `${prefix.replace(/-/g, ' ')} Keywords`, name: `${prefix}_Keywords`, type: 'textarea' })}
@@ -607,7 +607,7 @@ export default function CompanySettings() {
               <h2 style={{ fontSize: '1.2rem', color: '#0f172a', marginTop: 0, marginBottom: '20px' }}>Advanced Layouts & Printers</h2>
               <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '20px' }}>Configure receipt printing dimensions, specific banner texts, and precise legacy layouts.</p>
               
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px' }}>Print Dimensions & Layout</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px' }}>Print Dimensions & Layout</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
                 {renderField({ label: "Share Receipt Table Width", name: "sharereceipt_table_width" })}
                 {renderField({ label: "Share Receipt Table Height", name: "sharereceipt_table_height" })}
@@ -646,10 +646,10 @@ export default function CompanySettings() {
                 {renderField({ label: "Login Images", name: "login_images" })}
               </div>
 
-              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>Dynamic Homepage Banners</h3>
+              <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px', marginBottom: '16px', marginTop: '24px' }}>Dynamic Homepage Banners</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px 24px' }}>
                 {[1, 2, 3, 4, 5, 6].map(num => (
-                  <div key={num} style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div key={num} style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.6)' }}>
                     {renderField({ label: `Show Banner ${num}`, name: `banner_${num}`, type: 'select' })}
                     {renderField({ label: `Banner ${num} Headline`, name: `banner_${num}_headline` })}
                     {renderField({ label: `Banner ${num} Text`, name: `banner_${num}_text`, type: 'textarea' })}

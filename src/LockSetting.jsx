@@ -93,7 +93,7 @@ function LockSetting() {
           <button onClick={() => handleSave('IP Address')} style={buttonStyle('#2563eb')}>Active IP Address</button>
         </div>
 
-        <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '6px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '11px' }}>
               <thead>
@@ -118,7 +118,7 @@ function LockSetting() {
                     <tr 
                       key={branch.id} 
                       style={{ 
-                        borderBottom: '1px solid #e2e8f0', 
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.4)', 
                         backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8fafc',
                         transition: 'background-color 0.2s ease'
                       }}

@@ -186,7 +186,7 @@ export default function ManageNews({ view, user }) {
 
       {isCreating && isAdmin ? (
         <div className="st-card" style={{ padding: '20px', maxWidth: '800px' }}>
-          <h2 style={{ fontSize: '1rem', marginTop: 0, marginBottom: '20px', color: '#0f172a', textTransform: 'uppercase', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px' }}>
+          <h2 style={{ fontSize: '1rem', marginTop: 0, marginBottom: '20px', color: '#0f172a', textTransform: 'uppercase', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', paddingBottom: '8px' }}>
             {editingId ? 'Edit News' : 'Create News'}
           </h2>
           <form onSubmit={handleSubmit}>
@@ -259,7 +259,7 @@ export default function ManageNews({ view, user }) {
       ) : (
         <div className="st-card">
           {isAdmin && (
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'flex-end', gap: '16px' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255, 255, 255, 0.4)', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', display: 'flex', alignItems: 'flex-end', gap: '16px' }}>
               <div style={{ width: '200px' }}>
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', marginBottom: '4px' }}>Active Status</label>
                 <select className="st-select" style={{ width: '100%' }} value={searchStatus} onChange={(e) => setSearchStatus(e.target.value)}>

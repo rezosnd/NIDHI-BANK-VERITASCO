@@ -9,10 +9,20 @@ function App() {
       const savedUser = localStorage.getItem('user');
       const token = localStorage.getItem('authToken');
       if (savedUser && token) {
+        // 🛡️ Validate JWT expiry on page load — don't trust a stale token
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+          // Token expired — clear storage and force re-login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          return null;
+        }
         return JSON.parse(savedUser);
       }
     } catch (e) {
-      console.error("Error reading session");
+      // Malformed token or JSON — clear and re-login
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
     }
     return null;
   });

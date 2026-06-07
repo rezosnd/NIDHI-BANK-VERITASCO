@@ -100,21 +100,26 @@ function BranchDashboard({ user, onNavigate }) {
             style={{ 
               display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', justifyContent: 'center',
               cursor: 'pointer', gap: '1rem', padding: '1.25rem 0.5rem', 
-              borderRadius: '16px', border: '1px solid #f1f5f9',
-              backgroundColor: 'white',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
-              transition: 'all 0.2s ease',
+              borderRadius: '20px',
+              backgroundColor: 'rgba(255, 255, 255, 0.4)',
+              backdropFilter: 'blur(32px)',
+              WebkitBackdropFilter: 'blur(32px)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              borderTop: '1px solid rgba(255, 255, 255, 0.9)',
+              borderLeft: '1px solid rgba(255, 255, 255, 0.9)',
+              boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05), inset 0 0 20px rgba(255, 255, 255, 0.5)',
+              transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
               minHeight: '110px'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-3px)';
-              e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02)';
-              e.currentTarget.style.borderColor = '#bfdbfe';
+              e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
+              e.currentTarget.style.boxShadow = '0 15px 35px rgba(31, 38, 135, 0.1), inset 0 0 25px rgba(255, 255, 255, 0.8)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
             }} 
             onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)';
-              e.currentTarget.style.borderColor = '#f1f5f9';
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.05), inset 0 0 20px rgba(255, 255, 255, 0.5)';
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
             }}
           >
             <div style={{ color: '#0052cc' }}>
@@ -130,13 +135,13 @@ function BranchDashboard({ user, onNavigate }) {
   );
 
   return (
-    <div style={{ flex: 1, padding: '2rem', backgroundColor: '#f8fafc', minHeight: '100%', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ flex: 1, padding: '2rem', backgroundColor: 'transparent', minHeight: '100%', fontFamily: 'Inter, sans-serif' }}>
       
       {/* Search Container (Two Cards) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem', maxWidth: '1200px', width: '100%', margin: '0 auto 3rem auto' }}>
         
         {/* Left Col Search */}
-        <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'white', borderRadius: '16px', padding: '1.75rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
+        <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', borderRadius: '24px', padding: '1.75rem', border: '1px solid rgba(255, 255, 255, 0.4)', borderTop: '1px solid rgba(255, 255, 255, 0.9)', borderLeft: '1px solid rgba(255, 255, 255, 0.9)', boxShadow: '0 16px 40px rgba(31, 38, 135, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.6)' }}>
           <WatermarkPeople />
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', position: 'relative', zIndex: 2 }}>
@@ -146,34 +151,34 @@ function BranchDashboard({ user, onNavigate }) {
           
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', marginBottom: '0.5rem' }}>Enter Member ID / Mobile No.</label>
-              <input type="text" value={memberId} onChange={(e) => setMemberId(e.target.value)} placeholder="Enter Member ID / Mobile No." style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid #e2e8f0', outline: 'none', borderRadius: '8px', transition: 'border-color 0.2s', backgroundColor: '#ffffff' }} onFocus={(e) => e.target.style.borderColor = '#0052cc'} onBlur={(e) => e.target.style.borderColor = '#e2e8f0'} />
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#475569', marginBottom: '0.5rem' }}>Enter Member ID / Mobile No.</label>
+              <input type="text" value={memberId} onChange={(e) => setMemberId(e.target.value)} placeholder="Enter Member ID / Mobile No." style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid rgba(255, 255, 255, 0.8)', outline: 'none', borderRadius: '12px', transition: 'all 0.3s ease', backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(10px)', color: '#0f172a' }} onFocus={(e) => {e.target.style.borderColor = '#3b82f6'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';}} onBlur={(e) => {e.target.style.borderColor = 'rgba(255, 255, 255, 0.8)'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';}} />
             </div>
             
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', marginBottom: '0.5rem' }}>Enter Account Number</label>
-              <input type="text" value={accountNo} onChange={(e) => setAccountNo(e.target.value)} placeholder="Enter Account Number" style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid #e2e8f0', outline: 'none', borderRadius: '8px', transition: 'border-color 0.2s', backgroundColor: '#ffffff' }} onFocus={(e) => e.target.style.borderColor = '#0052cc'} onBlur={(e) => e.target.style.borderColor = '#e2e8f0'} />
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#475569', marginBottom: '0.5rem' }}>Enter Account Number</label>
+              <input type="text" value={accountNo} onChange={(e) => setAccountNo(e.target.value)} placeholder="Enter Account Number" style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid rgba(255, 255, 255, 0.8)', outline: 'none', borderRadius: '12px', transition: 'all 0.3s ease', backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(10px)', color: '#0f172a' }} onFocus={(e) => {e.target.style.borderColor = '#3b82f6'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';}} onBlur={(e) => {e.target.style.borderColor = 'rgba(255, 255, 255, 0.8)'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';}} />
             </div>
 
-            <button style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#0052cc', color: 'white', border: 'none', padding: '0.65rem 1.5rem', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,82,204,0.2)', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#0043a6'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0052cc'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+            <button style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #2563eb, #1e40af)', color: 'white', border: 'none', padding: '0.65rem 1.5rem', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem', borderRadius: '12px', boxShadow: '0 8px 20px rgba(37, 99, 235, 0.2)', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #3b82f6, #1e3a8a)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.4)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #2563eb, #1e40af)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 99, 235, 0.2)'; }}>
               <IconSearch /> Search
             </button>
           </div>
         </div>
 
         {/* Right Col Search */}
-        <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'white', borderRadius: '16px', padding: '1.75rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
+        <div style={{ position: 'relative', overflow: 'hidden', backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', borderRadius: '24px', padding: '1.75rem', border: '1px solid rgba(255, 255, 255, 0.4)', borderTop: '1px solid rgba(255, 255, 255, 0.9)', borderLeft: '1px solid rgba(255, 255, 255, 0.9)', boxShadow: '0 16px 40px rgba(31, 38, 135, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.6)' }}>
           <WatermarkLightning />
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', position: 'relative', zIndex: 2 }}>
-            <IconLightning />
+            <div style={{ color: '#0052cc' }}><IconLightning /></div>
             <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#1e293b', letterSpacing: '0.5px' }}>QUICK ACTION</div>
           </div>
           
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', marginBottom: '0.5rem' }}>Select Work Type (SB / PIGMY / RD / FD)</label>
-              <select style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid #e2e8f0', outline: 'none', color: '#64748b', borderRadius: '8px', backgroundColor: '#ffffff', cursor: 'pointer' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#475569', marginBottom: '0.5rem' }}>Select Work Type (SB / PIGMY / RD / FD)</label>
+              <select style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid rgba(255, 255, 255, 0.8)', outline: 'none', borderRadius: '12px', transition: 'all 0.3s ease', backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(10px)', color: '#0f172a', cursor: 'pointer' }} onFocus={(e) => {e.target.style.borderColor = '#3b82f6'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';}} onBlur={(e) => {e.target.style.borderColor = 'rgba(255, 255, 255, 0.8)'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';}}>
                 <option value="">- - - Select Work Type - - -</option>
                 <option value="deposit">Deposit</option>
                 <option value="withdrawal">Withdrawal</option>
@@ -181,11 +186,11 @@ function BranchDashboard({ user, onNavigate }) {
             </div>
 
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#64748b', marginBottom: '0.5rem' }}>Account No / Member ID</label>
-              <input type="text" value={searchAccountNo} onChange={(e) => setSearchAccountNo(e.target.value)} placeholder="e.g. 1004523" style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid #e2e8f0', outline: 'none', borderRadius: '8px', transition: 'border-color 0.2s', backgroundColor: '#ffffff' }} onFocus={(e) => e.target.style.borderColor = '#0052cc'} onBlur={(e) => e.target.style.borderColor = '#e2e8f0'} />
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#475569', marginBottom: '0.5rem' }}>Account No / Member ID</label>
+              <input type="text" value={searchAccountNo} onChange={(e) => setSearchAccountNo(e.target.value)} placeholder="e.g. 1004523" style={{ width: '100%', padding: '0.7rem 1rem', fontSize: '0.8rem', border: '1px solid rgba(255, 255, 255, 0.8)', outline: 'none', borderRadius: '12px', transition: 'all 0.3s ease', backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(10px)', color: '#0f172a' }} onFocus={(e) => {e.target.style.borderColor = '#3b82f6'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';}} onBlur={(e) => {e.target.style.borderColor = 'rgba(255, 255, 255, 0.8)'; e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';}} />
             </div>
 
-            <button style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#0052cc', color: 'white', border: 'none', padding: '0.65rem 2rem', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,82,204,0.2)', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#0043a6'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0052cc'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+            <button style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #2563eb, #1e40af)', color: 'white', border: 'none', padding: '0.65rem 2rem', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem', borderRadius: '12px', boxShadow: '0 8px 20px rgba(37, 99, 235, 0.2)', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #3b82f6, #1e3a8a)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.4)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #2563eb, #1e40af)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 99, 235, 0.2)'; }}>
               <IconArrowRight /> Go
             </button>
           </div>

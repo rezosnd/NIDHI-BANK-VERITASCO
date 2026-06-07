@@ -113,9 +113,9 @@ function Profile() {
   const reqAsterisk = <span style={{ color: '#ef4444', marginLeft: '2px' }}>*</span>;
   
   const sectionContainerStyle = {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
     borderRadius: '12px',
-    border: '1px solid #e2e8f0',
+    border: '1px solid rgba(255, 255, 255, 0.6)',
     padding: '1.5rem',
     marginBottom: '1.5rem',
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
@@ -280,7 +280,7 @@ function Profile() {
               <label style={inputStyle}>% Unencumbered Term Deposits</label>
               <input type="text" name="percentageUnencumbered" className="form-input" value={formData.percentageUnencumbered} onChange={handleChange} placeholder="e.g. 15%" />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', backgroundColor: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.6)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input type="checkbox" id="neftAlertSms" name="neftAlertSms" checked={formData.neftAlertSms} onChange={handleChange} style={{ width: '18px', height: '18px', accentColor: '#2563eb' }} />
                 <label htmlFor="neftAlertSms" style={{fontWeight: '600', color: '#334155', margin: 0, cursor: 'pointer'}}>NEFT SMS Alert</label>

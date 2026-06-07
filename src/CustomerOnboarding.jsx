@@ -8,8 +8,8 @@ const SectionHeader = ({ title }) => (
 
 const inputStyle = {
   width: '100%', padding: '4px 8px', fontSize: '12px', height: '26px', 
-  border: '1px solid #cbd5e1', borderRadius: '3px', color: '#1e293b', 
-  backgroundColor: '#fff', outline: 'none', transition: 'border-color 0.15s ease'
+  border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '3px', color: '#1e293b', 
+  backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', outline: 'none', transition: 'border-color 0.15s ease'
 };
 
 const RowField = ({ label, req, children }) => (
@@ -121,7 +121,7 @@ function CustomerOnboarding({ view }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+      <form onSubmit={handleSubmit} style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
         
         {/* Personal Details Section */}
         <SectionHeader title="Personal Details" />
@@ -235,7 +235,7 @@ function CustomerOnboarding({ view }) {
         <SectionHeader title="KYC Details" />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '32px', marginBottom: '16px' }}>
           
-          <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '4px' }}>
+          <div style={{ border: '1px solid rgba(255, 255, 255, 0.6)', padding: '12px', borderRadius: '4px' }}>
             <div style={{ fontSize: '10px', fontWeight: '800', color: '#0f172a', marginBottom: '12px' }}>PROOF OF IDENTITY</div>
             <KycCheck label="PASSPORT" name="kycPassport" checked={formData.kycPassport} onChange={handleChange} />
             <KycCheck label="VOTER ID CARD" name="kycVoterId" checked={formData.kycVoterId} onChange={handleChange} />
@@ -251,7 +251,7 @@ function CustomerOnboarding({ view }) {
             <KycCheck label="NREGA CARD" name="kycNrega" checked={formData.kycNrega} onChange={handleChange} />
           </div>
 
-          <div style={{ border: '1px solid #e2e8f0', padding: '12px', borderRadius: '4px' }}>
+          <div style={{ border: '1px solid rgba(255, 255, 255, 0.6)', padding: '12px', borderRadius: '4px' }}>
             <div style={{ fontSize: '10px', fontWeight: '800', color: '#0f172a', marginBottom: '12px' }}>PROOF OF ADDRESS/CORRESPONDENCE ADDRESS</div>
             <KycCheck label="CREDIT CARD STATEMENT (NOT MORE THAN 3 MONTHS OLD)" name="kycCredit" checked={formData.kycCredit} onChange={handleChange} />
             <KycCheck label="INCOME / WEALTH TAX ASSESSMENT ORDER" name="kycIncomeTax" checked={formData.kycIncomeTax} onChange={handleChange} />

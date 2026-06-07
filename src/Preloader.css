@@ -1,0 +1,79 @@
+.premium-preloader {
+  position: fixed;
+  inset: 0;
+  background: #09090b; /* Match the premium dark background */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.8s ease;
+}
+
+.premium-preloader.hide {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.preloader-text {
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #a1a1aa;
+  font-weight: 600;
+  animation: pulseOpacity 1.5s infinite alternate;
+}
+
+@keyframes pulseOpacity {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.preloader-counter-container {
+  display: flex;
+  align-items: flex-end;
+  font-size: 5rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.preloader-digit-window {
+  height: 5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.preloader-digit-column {
+  display: flex;
+  flex-direction: column;
+  /* Instead of pure CSS transition, we let React handle the translateY via inline styles and we smooth it here */
+  transition: transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.digit {
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.digit.empty {
+  visibility: hidden;
+}
+
+.preloader-percent {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}

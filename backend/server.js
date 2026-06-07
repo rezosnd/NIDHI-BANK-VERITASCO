@@ -4,6 +4,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const path = require('path');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
@@ -12,10 +13,22 @@ const app = express();
 
 // 🛡️ Security Middleware: Helmet sets various HTTP headers to protect the app
 app.use(helmet({
-  contentSecurityPolicy: false, // Disabled to allow frontend assets in local dev/proxy
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "http://localhost:5000", "ws://localhost:5173", "http://localhost:5173", "ws://127.0.0.1:5173", "http://127.0.0.1:5173"]
+    }
+  }
 }));
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  credentials: true
+}));
 app.use(express.json({ limit: '10kb' })); // Limit payload size to prevent DOS
 
 // 🛡️ Security Middleware: Rate Limiting
@@ -41,9 +54,9 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Helper to hash passwords using built-in crypto (SHA-256)
-function hashPassword(password) {
-  return crypto.createHash('sha256').update(password).digest('hex');
+// Helper to hash passwords using bcrypt
+async function hashPassword(password) {
+  return await bcrypt.hash(password, 12);
 }
 
 // Connect to PostgreSQL DB (Neon) via Environment Variables
@@ -77,10 +90,29 @@ async function initDb() {
       await pool.query(`ALTER TABLE users ADD COLUMN branch_id INTEGER`);
     } catch(e) {}
 
-    const { rows } = await pool.query("SELECT count(*) as count FROM users");
-    if (parseInt(rows[0].count) === 0) {
-      await pool.query("INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3)", ['admin', hashPassword('Tiger^123'), 'Admin']);
-    }
+    try {
+      await pool.query(`ALTER TABLE users ADD COLUMN service_center_id INTEGER`);
+    } catch(e) {}
+
+    try { await pool.query(`ALTER TABLE users ADD COLUMN contact_name VARCHAR(255)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN mobile_no VARCHAR(255)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN phone_no VARCHAR(255)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN email VARCHAR(255)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN address TEXT`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN pin_code VARCHAR(50)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_account_no VARCHAR(50)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_account_name VARCHAR(255)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_name VARCHAR(255)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_ifsc VARCHAR(20)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_branch_name VARCHAR(255)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN min_balance NUMERIC(18,2) DEFAULT 0`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT true`); } catch(e) {}
+
+    // Always ensure the admin user exists (ON CONFLICT DO NOTHING = safe to run every startup)
+    await pool.query(
+      "INSERT INTO users (username, password_hash, role) VALUES ($1, $2, 'Admin') ON CONFLICT (username) DO NOTHING",
+      ['admin', await hashPassword('Tiger^123')]
+    );
 
     await pool.query(`CREATE TABLE IF NOT EXISTS customers (
       id SERIAL PRIMARY KEY,
@@ -316,6 +348,118 @@ async function initDb() {
       ip_address VARCHAR(255)
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS branch_ip_addresses (
+      id SERIAL PRIMARY KEY,
+      branch_id INTEGER REFERENCES branches(id) ON DELETE CASCADE,
+      ip_address VARCHAR(45) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS service_centers (
+      id SERIAL PRIMARY KEY,
+      branch_id INTEGER REFERENCES branches(id) ON DELETE CASCADE,
+      name VARCHAR(255) NOT NULL,
+      code VARCHAR(2) NOT NULL,
+      state_id INTEGER REFERENCES states(id) ON DELETE SET NULL,
+      address TEXT,
+      contact_name VARCHAR(255),
+      phone_no VARCHAR(15),
+      mobile_no VARCHAR(15),
+      email VARCHAR(255),
+      pin_code VARCHAR(10),
+      display_on_branch_page BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    try {
+      await pool.query("ALTER TABLE service_centers ADD COLUMN display_on_branch_page BOOLEAN DEFAULT true");
+    } catch(e) {}
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS balance_requests (
+      id SERIAL PRIMARY KEY,
+      account_name VARCHAR(255),
+      order_id VARCHAR(255),
+      amount NUMERIC(15,2),
+      request_date DATE DEFAULT CURRENT_DATE,
+      status VARCHAR(50) DEFAULT 'Pending',
+      approved_date DATE,
+      bank_name VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS online_requests (
+      id SERIAL PRIMARY KEY,
+      branch_name VARCHAR(255),
+      member_name VARCHAR(255),
+      contact_no VARCHAR(50),
+      email VARCHAR(255),
+      city VARCHAR(255),
+      plan_name VARCHAR(255),
+      reference_no VARCHAR(255),
+      request_date DATE DEFAULT CURRENT_DATE,
+      status VARCHAR(50) DEFAULT 'Pending',
+      approved_date DATE,
+      remark TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS customer_complaints (
+      id SERIAL PRIMARY KEY,
+      branch_id INTEGER REFERENCES branches(id),
+      name VARCHAR(255),
+      mobile VARCHAR(50),
+      email VARCHAR(255),
+      city VARCHAR(255),
+      reference_id VARCHAR(100),
+      service_type VARCHAR(100),
+      status VARCHAR(50) DEFAULT 'Open',
+      issue_date DATE DEFAULT CURRENT_DATE,
+      description TEXT,
+      resolution_remark TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS customer_feedback (
+      id SERIAL PRIMARY KEY,
+      branch_id INTEGER REFERENCES branches(id),
+      name VARCHAR(255),
+      mobile VARCHAR(50),
+      email VARCHAR(255),
+      city VARCHAR(255),
+      reference_id VARCHAR(100),
+      service_type VARCHAR(100),
+      rating INTEGER DEFAULT 5,
+      issue_date DATE DEFAULT CURRENT_DATE,
+      feedback_text TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS share_transfer_requests (
+      id SERIAL PRIMARY KEY,
+      branch_id INTEGER REFERENCES branches(id),
+      request_date DATE DEFAULT CURRENT_DATE,
+      transferor_id VARCHAR(100),
+      transferor_name VARCHAR(255),
+      transferee_id VARCHAR(100),
+      transferee_name VARCHAR(255),
+      no_of_shares INTEGER,
+      transfer_amount NUMERIC(15,2),
+      status VARCHAR(50) DEFAULT 'Pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS service_center_debit_requests (
+      id SERIAL PRIMARY KEY,
+      branch_id INTEGER REFERENCES branches(id),
+      service_center_id INTEGER REFERENCES service_centers(id),
+      request_date DATE DEFAULT CURRENT_DATE,
+      account_no VARCHAR(255),
+      member_name VARCHAR(255),
+      amount NUMERIC(15,2),
+      status VARCHAR(50) DEFAULT 'Pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
     console.log("Database schema initialized successfully.");
   } catch (error) {
     console.error("Error initializing database schema:", error);
@@ -340,6 +484,28 @@ function authenticateToken(req, res, next) {
   });
 }
 
+// 🛡️ Role-Based Access: Admin only middleware
+function authorizeAdmin(req, res, next) {
+  if (!req.user || req.user.role !== 'Admin') {
+    return res.status(403).json({ success: false, message: 'Access Denied: Admin privileges required' });
+  }
+  next();
+}
+
+// 🛡️ Get real client IP — do NOT blindly trust x-forwarded-for (spoofable)
+function getClientIp(req) {
+  // Only trust x-forwarded-for if explicitly configured (e.g., behind a reverse proxy)
+  // For direct connections, use the socket address
+  return req.socket.remoteAddress || req.ip || 'unknown';
+}
+
+// 🛡️ Validate IP address format (IPv4 and IPv6)
+function isValidIp(ip) {
+  const ipv4 = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const ipv6 = /^[0-9a-fA-F:]{2,39}$/;
+  return ipv4.test(ip) || ipv6.test(ip);
+}
+
 // API Routes
 
 // Secure Login Route
@@ -350,21 +516,29 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     return res.status(400).json({ success: false, message: 'Missing credentials' });
   }
 
-  const hashedPassword = hashPassword(password);
-
   try {
     const { rows } = await pool.query(`
-      SELECT u.*, b.name as branch_name 
+      SELECT u.*, b.name as branch_name, b.is_active_ip_address 
       FROM users u 
       LEFT JOIN branches b ON u.branch_id = b.id 
-      WHERE u.username = $1 AND u.password_hash = $2
-    `, [username, hashedPassword]);
+      WHERE u.username = $1
+    `, [username]);
     const row = rows[0];
-    if (row) {
+    if (row && await bcrypt.compare(password, row.password_hash)) {
+      const clientIp = getClientIp(req);
+
+      // 🛡️ Security Feature: Enforce IP Whitelisting for Branch Users
+      if (row.role === 'Branch User' && row.is_active_ip_address) {
+        const ipCheck = await pool.query("SELECT * FROM branch_ip_addresses WHERE branch_id = $1 AND ip_address = $2", [row.branch_id, clientIp]);
+        if (ipCheck.rows.length === 0) {
+           return res.status(403).json({ success: false, message: 'Access Denied: You are not logging in from a whitelisted branch network.' });
+        }
+      }
+
       // Record login history
       await pool.query(
         "INSERT INTO login_history (user_id, username, user_type, branch_id, ip_address) VALUES ($1, $2, $3, $4, $5)",
-        [row.id, row.username, row.role, row.branch_id, req.ip || req.connection.remoteAddress]
+        [row.id, row.username, row.role, row.branch_id, clientIp]
       );
 
       // 🛡️ Generate a secure JWT token instead of an in-memory session
@@ -410,7 +584,7 @@ app.post('/api/customers', authenticateToken, async (req, res) => {
 // Secure Branch Management (Protected by middleware)
 app.get('/api/branches', authenticateToken, async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM branches ORDER BY id DESC");
+    const { rows } = await pool.query("SELECT * FROM branches ORDER BY name ASC");
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -428,7 +602,7 @@ app.get('/api/users', authenticateToken, async (req, res) => {
   }
 });
 
-app.post('/api/login_history', authenticateToken, async (req, res) => {
+app.post('/api/login_history', authenticateToken, authorizeAdmin, async (req, res) => {
   const { branch_id, user_type, user_id, from_date, to_date } = req.body;
   try {
     let query = `
@@ -461,13 +635,14 @@ app.post('/api/login_history', authenticateToken, async (req, res) => {
       params.push(to_date);
     }
 
-    query += ` ORDER BY lh.login_time DESC`;
+    // Safety cap: never return more than 500 rows to prevent memory exhaustion
+    query += ` ORDER BY lh.login_time DESC LIMIT 500`;
 
     const { rows } = await pool.query(query, params);
     res.json(rows);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -636,17 +811,9 @@ app.post('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/api/branches', authenticateToken, async (req, res) => {
-  try {
-    const { rows } = await pool.query('SELECT * FROM branches ORDER BY id ASC');
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
+// (Duplicate GET /api/branches removed — was registered twice, first one at line ~479 is canonical)
 
-app.put('/api/branches/locks', authenticateToken, async (req, res) => {
+app.put('/api/branches/locks', authenticateToken, authorizeAdmin, async (req, res) => {
   const { branches } = req.body;
   const client = await pool.connect();
   try {
@@ -668,21 +835,65 @@ app.put('/api/branches/locks', authenticateToken, async (req, res) => {
   }
 });
 
-app.post('/api/branches', authenticateToken, async (req, res) => {
+app.get('/api/branch-ips', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT b_ip.id, b_ip.ip_address, b_ip.created_at, b.name as branch_name, b.code as branch_code 
+      FROM branch_ip_addresses b_ip
+      JOIN branches b ON b.id = b_ip.branch_id
+      ORDER BY b_ip.id DESC
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/branch-ips', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { branch_id, ip_address } = req.body;
+  if (!branch_id || !ip_address) return res.status(400).json({ success: false, message: 'Branch ID and IP Address are required' });
+  // 🛡️ Validate IP address format before storing
+  if (!isValidIp(ip_address.trim())) {
+    return res.status(400).json({ success: false, message: 'Invalid IP address format. Use IPv4 (e.g., 192.168.1.1) or IPv6.' });
+  }
+  try {
+    const result = await pool.query(
+      "INSERT INTO branch_ip_addresses (branch_id, ip_address) VALUES ($1, $2) RETURNING id",
+      [branch_id, ip_address.trim()]
+    );
+    res.json({ success: true, message: 'IP Address added successfully', id: result.rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.delete('/api/branch-ips/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query("DELETE FROM branch_ip_addresses WHERE id = $1", [id]);
+    res.json({ success: true, message: 'IP Address removed successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/branches', authenticateToken, authorizeAdmin, async (req, res) => {
   const { name, code, state, address, contactName, phoneNo, mobileNo, email, pinCode } = req.body;
   
   // Auto-generate secure branch login credentials
   const cleanCode = (code || 'br').toLowerCase().replace(/[^a-z0-9]/g, '');
   const username = `${cleanCode}_${Math.floor(100 + Math.random() * 900)}`;
   const password = `VNB@${Math.floor(100000 + Math.random() * 900000)}`;
-  const hashedPassword = hashPassword(password);
+  const hashedPassword = await hashPassword(password); // 🛡️ FIX: was missing await → stored Promise not hash
 
   try {
     const sql = `INSERT INTO branches (name, code, state, address, contact_name, phone_no, mobile_no, email, pin_code) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`;
     const result = await pool.query(sql, [name, code, state, address, contactName, phoneNo, mobileNo, email, pinCode]);
     const branchId = result.rows[0].id;
 
-    // Start a transaction-like sequence (first branch, then user with linked branch_id)
     await pool.query("INSERT INTO users (username, password_hash, role, branch_id) VALUES ($1, $2, $3, $4)", [username, hashedPassword, 'Branch User', branchId]);
     
     res.json({ 
@@ -697,7 +908,7 @@ app.post('/api/branches', authenticateToken, async (req, res) => {
   }
 });
 
-app.put('/api/branches/:id', authenticateToken, async (req, res) => {
+app.put('/api/branches/:id', authenticateToken, authorizeAdmin, async (req, res) => {
   const { id } = req.params;
   const { name, code, state, address, contactName, phoneNo, mobileNo, email, pinCode } = req.body;
   const sql = `UPDATE branches SET name=$1, code=$2, state=$3, address=$4, contact_name=$5, phone_no=$6, mobile_no=$7, email=$8, pin_code=$9 WHERE id=$10`;
@@ -711,10 +922,10 @@ app.put('/api/branches/:id', authenticateToken, async (req, res) => {
   }
 });
 
-app.put('/api/branches/:id/password', authenticateToken, async (req, res) => {
+app.put('/api/branches/:id/password', authenticateToken, authorizeAdmin, async (req, res) => {
   const { id } = req.params;
   const newPassword = `VNB@${Math.floor(100000 + Math.random() * 900000)}`;
-  const hashedPassword = hashPassword(newPassword);
+  const hashedPassword = await hashPassword(newPassword); // 🛡️ FIX: was missing await
 
   try {
     const result = await pool.query(
@@ -725,10 +936,8 @@ app.put('/api/branches/:id/password', authenticateToken, async (req, res) => {
     let finalUsername;
     
     if (result.rows.length === 0) {
-      // The branch exists, but there's no user account for it (likely a legacy branch created before user auth was added)
-      // We will create the user account for it right now!
       const branchRes = await pool.query("SELECT code FROM branches WHERE id = $1", [id]);
-      if (branchRes.rows.length === 0) return res.status(404).json({ error: 'Branch not found' });
+      if (branchRes.rows.length === 0) return res.status(404).json({ success: false, message: 'Branch not found' });
       
       const cleanCode = (branchRes.rows[0].code || 'br').toLowerCase().replace(/[^a-z0-9]/g, '');
       finalUsername = `${cleanCode}_${Math.floor(100 + Math.random() * 900)}`;
@@ -751,10 +960,156 @@ app.put('/api/branches/:id/password', authenticateToken, async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Service Centers Endpoints
+app.get('/api/service-centers', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM service_centers ORDER BY id DESC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
+app.post('/api/service-centers', authenticateToken, async (req, res) => {
+  const { branch_id, name, code, state_id, address, contact_name, phone_no, mobile_no, email, pin_code, display_on_branch_page } = req.body;
+  try {
+    const sql = `INSERT INTO service_centers (branch_id, name, code, state_id, address, contact_name, phone_no, mobile_no, email, pin_code, display_on_branch_page) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`;
+    const result = await pool.query(sql, [branch_id, name, code, state_id || null, address, contact_name, phone_no, mobile_no, email, pin_code, display_on_branch_page !== false]);
+    res.json({ success: true, message: 'Service Center created successfully', id: result.rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/service-centers/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { branch_id, name, code, state_id, address, contact_name, phone_no, mobile_no, email, pin_code, display_on_branch_page } = req.body;
+  try {
+    const sql = `UPDATE service_centers SET branch_id=$1, name=$2, code=$3, state_id=$4, address=$5, contact_name=$6, phone_no=$7, mobile_no=$8, email=$9, pin_code=$10, display_on_branch_page=$11 WHERE id=$12`;
+    await pool.query(sql, [branch_id, name, code, state_id || null, address, contact_name, phone_no, mobile_no, email, pin_code, display_on_branch_page !== false, id]);
+    res.json({ success: true, message: 'Service Center updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/service-centers/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query("DELETE FROM service_centers WHERE id = $1", [id]);
+    res.json({ success: true, message: 'Service Center deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create Service Center User
+app.post('/api/service-center-users', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { branch_id, service_center_id, contact_name, mobile_no, phone_no, email, address, pin_code,
+            bank_account_no, bank_account_name, bank_name, bank_ifsc, bank_branch_name, min_balance,
+            username, password, is_active } = req.body;
+    
+    // Check if username exists
+    const userCheck = await pool.query("SELECT id FROM users WHERE username = $1", [username]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ success: false, message: 'Username already exists' });
+    }
+
+    const hashedPassword = await hashPassword(password); // 🛡️ FIX: was missing await
+    
+    await pool.query(
+      `INSERT INTO users (username, password_hash, role, branch_id, service_center_id, contact_name, mobile_no, phone_no, email, address, pin_code, bank_account_no, bank_account_name, bank_name, bank_ifsc, bank_branch_name, min_balance, is_active) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+      [username, hashedPassword, 'Service Center User', branch_id, service_center_id, contact_name, mobile_no, phone_no, email, address, pin_code,
+       bank_account_no || null, bank_account_name || null, bank_name || null, bank_ifsc || null, bank_branch_name || null, min_balance || 0, is_active !== false]
+    );
+
+    res.json({ success: true, message: 'Service Center User created successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update Service Center User
+app.put('/api/service-center-users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { branch_id, service_center_id, contact_name, mobile_no, phone_no, email, address, pin_code,
+            bank_account_no, bank_account_name, bank_name, bank_ifsc, bank_branch_name, min_balance,
+            password, username, is_active } = req.body;
+    
+    let sql = `UPDATE users SET branch_id=$1, service_center_id=$2, contact_name=$3, mobile_no=$4, phone_no=$5, email=$6, address=$7, pin_code=$8, bank_account_no=$9, bank_account_name=$10, bank_name=$11, bank_ifsc=$12, bank_branch_name=$13, min_balance=$14, is_active=$15`;
+    let params = [branch_id, service_center_id, contact_name, mobile_no, phone_no, email, address, pin_code,
+                  bank_account_no || null, bank_account_name || null, bank_name || null, bank_ifsc || null, bank_branch_name || null, min_balance || 0, is_active !== false];
+    let index = 16;
+
+    if (username && username.trim() !== '') {
+      sql += `, username=$${index}`;
+      params.push(username.trim());
+      index++;
+    }
+
+    if (password && password.trim() !== '') {
+      sql += `, password_hash=$${index}`;
+      params.push(await hashPassword(password)); // 🛡️ FIX: was missing await
+      index++;
+    }
+
+    sql += ` WHERE id=$${index} AND role='Service Center User'`;
+    params.push(id);
+
+    await pool.query(sql, params);
+    res.json({ success: true, message: 'Service Center User updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all Service Center Users
+app.get('/api/service-center-users', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT u.id as user_id, u.username, u.role, u.branch_id, u.service_center_id, 
+             u.contact_name, u.mobile_no, u.phone_no, u.email, u.address, u.pin_code,
+             u.bank_account_no, u.bank_account_name, u.bank_name, u.bank_ifsc, u.bank_branch_name, u.min_balance,
+             u.is_active,
+             sc.name as service_center_name, sc.code as service_center_code,
+             b.name as branch_name
+      FROM users u 
+      LEFT JOIN service_centers sc ON u.service_center_id = sc.id 
+      LEFT JOIN branches b ON u.branch_id = b.id
+      WHERE u.role = 'Service Center User'
+      ORDER BY u.id DESC
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete Service Center User
+app.delete('/api/service-center-users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query("DELETE FROM users WHERE id = $1 AND role = 'Service Center User'", [id]);
+    res.json({ success: true, message: 'Service Center User deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 app.get('/api/eod/transactions', authenticateToken, async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM transactions WHERE status = 'Pending' ORDER BY id ASC");
@@ -935,6 +1290,414 @@ app.delete('/api/states/:id', authenticateToken, async (req, res) => {
 });
 
 // --- DISTRICTS ---
+// Customer Complaints Report
+app.post('/api/customer-complaints/search', authenticateToken, async (req, res) => {
+  try {
+    const { branch_id, search_field, search_val, service_type, status, from_date, to_date } = req.body;
+    
+    let query = `
+      SELECT c.*, b.name as branch_name 
+      FROM customer_complaints c
+      LEFT JOIN branches b ON c.branch_id = b.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    // Enforce branch_id restriction for Branch Users
+    if (req.user.role === 'Branch User') {
+      query += ` AND c.branch_id = $${paramIndex++}`;
+      params.push(req.user.branchId);
+    } else if (branch_id && branch_id !== '0') {
+      query += ` AND c.branch_id = $${paramIndex++}`;
+      params.push(branch_id);
+    }
+
+    if (search_field && search_val) {
+      if (search_field === '2') { query += ` AND c.name ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // Name
+      else if (search_field === '3') { query += ` AND c.mobile ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // Mobile
+      else if (search_field === '4') { query += ` AND c.email ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // E-mail
+      else if (search_field === '5') { query += ` AND c.city ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // City
+      else if (search_field === '10') { query += ` AND c.reference_id ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // Reference Id
+    }
+
+    if (service_type && service_type !== '0') {
+      query += ` AND c.service_type = $${paramIndex++}`;
+      params.push(service_type);
+    }
+
+    if (status && status !== '-1') {
+      let statusStr = 'Open';
+      if(status === '0') statusStr = 'Open';
+      else if(status === '1') statusStr = 'Pending';
+      else if(status === '2') statusStr = 'Closed';
+      else if(status === '3') statusStr = 'Waiting on Customer';
+      
+      query += ` AND c.status = $${paramIndex++}`;
+      params.push(statusStr);
+    }
+
+    if (from_date) {
+      query += ` AND DATE(c.issue_date) >= $${paramIndex++}`;
+      params.push(from_date);
+    }
+    if (to_date) {
+      query += ` AND DATE(c.issue_date) <= $${paramIndex++}`;
+      params.push(to_date);
+    }
+
+    query += ` ORDER BY c.issue_date DESC LIMIT 500`;
+
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Update Customer Complaint Status
+app.put('/api/customer-complaints/:id/status', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, resolution_remark } = req.body;
+    
+    await pool.query(
+      "UPDATE customer_complaints SET status = $1, resolution_remark = $2 WHERE id = $3",
+      [status, resolution_remark, id]
+    );
+    res.json({ success: true, message: 'Complaint updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Customer Feedback Report
+app.post('/api/customer-feedback/search', authenticateToken, async (req, res) => {
+  try {
+    const { branch_id, search_field, search_val, service_type, from_date, to_date } = req.body;
+    
+    let query = `
+      SELECT f.*, b.name as branch_name 
+      FROM customer_feedback f
+      LEFT JOIN branches b ON f.branch_id = b.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    // Enforce branch_id restriction for Branch Users
+    if (req.user.role === 'Branch User') {
+      query += ` AND f.branch_id = $${paramIndex++}`;
+      params.push(req.user.branchId);
+    } else if (branch_id && branch_id !== '0') {
+      query += ` AND f.branch_id = $${paramIndex++}`;
+      params.push(branch_id);
+    }
+
+    if (search_field && search_val) {
+      if (search_field === '2') { query += ` AND f.name ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // Name
+      else if (search_field === '3') { query += ` AND f.mobile ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // Mobile
+      else if (search_field === '4') { query += ` AND f.email ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // E-mail
+      else if (search_field === '5') { query += ` AND f.city ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // City
+      else if (search_field === '10') { query += ` AND f.reference_id ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); } // Reference Id
+    }
+
+    if (service_type && service_type !== '0') {
+      query += ` AND f.service_type = $${paramIndex++}`;
+      params.push(service_type);
+    }
+
+    if (from_date) {
+      query += ` AND DATE(f.issue_date) >= $${paramIndex++}`;
+      params.push(from_date);
+    }
+    if (to_date) {
+      query += ` AND DATE(f.issue_date) <= $${paramIndex++}`;
+      params.push(to_date);
+    }
+
+    query += ` ORDER BY f.issue_date DESC LIMIT 500`;
+
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Unify Requests for "Assign Online Request"
+app.post('/api/all-requests/search', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { branch_id, communication_type, search_field, search_val, service_type, from_date, to_date } = req.body;
+    
+    let queries = [];
+    let params = [];
+    let paramIndex = 1;
+
+    // We build the WHERE clause based on filters, making sure it applies to all tables
+    let whereClause = "WHERE 1=1";
+    
+    if (branch_id && branch_id !== '0') {
+      whereClause += ` AND branch_filter = $${paramIndex++}`;
+      params.push(branch_id);
+    }
+    if (service_type && service_type !== '0') {
+      whereClause += ` AND service_type = $${paramIndex++}`;
+      params.push(service_type);
+    }
+    if (from_date) {
+      whereClause += ` AND req_date >= $${paramIndex++}`;
+      params.push(from_date);
+    }
+    if (to_date) {
+      whereClause += ` AND req_date <= $${paramIndex++}`;
+      params.push(to_date);
+    }
+    if (search_field && search_val) {
+      if (search_field === '2') { whereClause += ` AND name ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+      else if (search_field === '3') { whereClause += ` AND mobile ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+      else if (search_field === '4') { whereClause += ` AND email ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+      else if (search_field === '5') { whereClause += ` AND city ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+      else if (search_field === '10') { whereClause += ` AND reference_id ILIKE $${paramIndex++}`; params.push('%' + search_val + '%'); }
+    }
+
+    const complaintQuery = `
+      SELECT id, 'complaint' as table_type, branch_id::text as branch_filter, b.name as branch_name, 
+             name, mobile, email, city, reference_id, service_type, status, issue_date as req_date, description as remark
+      FROM customer_complaints c LEFT JOIN branches b ON c.branch_id = b.id
+    `;
+    const feedbackQuery = `
+      SELECT id, 'feedback' as table_type, branch_id::text as branch_filter, b.name as branch_name, 
+             name, mobile, email, city, reference_id, service_type, 'Feedback' as status, issue_date as req_date, feedback_text as remark
+      FROM customer_feedback f LEFT JOIN branches b ON f.branch_id = b.id
+    `;
+    const inquiryQuery = `
+      SELECT o.id, 'inquiry' as table_type, b.id::text as branch_filter, o.branch_name, 
+             member_name as name, contact_no as mobile, email, city, reference_no as reference_id, plan_name as service_type, status, request_date as req_date, remark
+      FROM online_requests o LEFT JOIN branches b ON o.branch_name = b.name
+    `;
+
+    if (communication_type === '1' || communication_type === '0') queries.push(`SELECT * FROM (${complaintQuery}) as sq1 ${whereClause}`);
+    if (communication_type === '2' || communication_type === '0') queries.push(`SELECT * FROM (${inquiryQuery}) as sq2 ${whereClause}`);
+    if (communication_type === '3' || communication_type === '0') queries.push(`SELECT * FROM (${feedbackQuery}) as sq3 ${whereClause}`);
+
+    if (queries.length === 0) return res.json([]);
+
+    const finalQuery = queries.join(" UNION ALL ") + " ORDER BY req_date DESC";
+    const { rows } = await pool.query(finalQuery, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Assign Requests
+app.post('/api/all-requests/assign', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { requests, target_branch_id } = req.body;
+    
+    // Fetch branch name
+    const branchRes = await pool.query("SELECT name FROM branches WHERE id = $1", [target_branch_id]);
+    if (branchRes.rows.length === 0) return res.status(404).json({ success: false, message: 'Branch not found' });
+    const targetBranchName = branchRes.rows[0].name;
+
+    for (let reqData of requests) {
+      if (reqData.table_type === 'complaint') {
+        await pool.query("UPDATE customer_complaints SET branch_id = $1 WHERE id = $2", [target_branch_id, reqData.id]);
+      } else if (reqData.table_type === 'feedback') {
+        await pool.query("UPDATE customer_feedback SET branch_id = $1 WHERE id = $2", [target_branch_id, reqData.id]);
+      } else if (reqData.table_type === 'inquiry') {
+        await pool.query("UPDATE online_requests SET branch_name = $1 WHERE id = $2", [targetBranchName, reqData.id]);
+      }
+    }
+    
+    res.json({ success: true, message: 'Requests successfully assigned.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Approve/Reject Transactions
+app.post('/api/transactions/pending', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { date } = req.body;
+    let query = "SELECT * FROM transactions WHERE status = 'Pending'";
+    const params = [];
+    
+    if (date) {
+      // The opening_date column is a VARCHAR in the schema, we might need a simple ILIKE or Exact match depending on format
+      query += " AND opening_date = $1";
+      params.push(date);
+    }
+    
+    query += " ORDER BY id DESC";
+    
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/transactions/status', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { ids, status } = req.body; // status can be 'Approved' or 'Rejected'
+    if (!['Approved', 'Rejected'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+    
+    // In a real app, you would use ANY($1) instead of mapping dynamically, but this works universally
+    const query = `UPDATE transactions SET status = $1 WHERE id = ANY($2::int[])`;
+    await pool.query(query, [status, ids]);
+    
+    res.json({ success: true, message: `Successfully ${status.toLowerCase()} ${ids.length} transactions.` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Share Transfer Request
+app.post('/api/share-transfers/search', authenticateToken, async (req, res) => {
+  try {
+    const { branch_id, search_val, from_date, to_date } = req.body;
+    let query = `
+      SELECT s.*, b.name as branch_name 
+      FROM share_transfer_requests s
+      LEFT JOIN branches b ON s.branch_id = b.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    if (req.user.role === 'Branch User') {
+      query += ` AND s.branch_id = $${paramIndex++}`;
+      params.push(req.user.branchId);
+    } else if (branch_id && branch_id !== '0') {
+      query += ` AND s.branch_id = $${paramIndex++}`;
+      params.push(branch_id);
+    }
+
+    if (search_val) {
+      query += ` AND (s.transferor_name ILIKE $${paramIndex} OR s.transferee_name ILIKE $${paramIndex} OR s.transferor_id ILIKE $${paramIndex} OR s.transferee_id ILIKE $${paramIndex})`;
+      params.push('%' + search_val + '%');
+      paramIndex++;
+    }
+
+    if (from_date) {
+      query += ` AND DATE(s.request_date) >= $${paramIndex++}`;
+      params.push(from_date);
+    }
+    if (to_date) {
+      query += ` AND DATE(s.request_date) <= $${paramIndex++}`;
+      params.push(to_date);
+    }
+
+    query += ` ORDER BY s.request_date DESC`;
+
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/share-transfers/status', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { ids, status } = req.body; 
+    if (!['Approved', 'Rejected'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+    
+    const query = `UPDATE share_transfer_requests SET status = $1 WHERE id = ANY($2::int[])`;
+    await pool.query(query, [status, ids]);
+    
+    res.json({ success: true, message: `Successfully ${status.toLowerCase()} ${ids.length} share transfer requests.` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Debit Request Service Center
+app.post('/api/debit-requests/search', authenticateToken, async (req, res) => {
+  try {
+    const { branch_id, service_center_id, from_date, to_date, status } = req.body;
+    let query = `
+      SELECT d.*, b.name as branch_name, s.name as service_center_name
+      FROM service_center_debit_requests d
+      LEFT JOIN branches b ON d.branch_id = b.id
+      LEFT JOIN service_centers s ON d.service_center_id = s.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIndex = 1;
+
+    if (req.user.role === 'Branch User') {
+      query += ` AND d.branch_id = $${paramIndex++}`;
+      params.push(req.user.branchId);
+    } else if (branch_id && branch_id !== '0') {
+      query += ` AND d.branch_id = $${paramIndex++}`;
+      params.push(branch_id);
+    }
+
+    if (service_center_id && service_center_id !== '0') {
+      query += ` AND d.service_center_id = $${paramIndex++}`;
+      params.push(service_center_id);
+    }
+
+    if (from_date) {
+      query += ` AND DATE(d.request_date) >= $${paramIndex++}`;
+      params.push(from_date);
+    }
+    if (to_date) {
+      query += ` AND DATE(d.request_date) <= $${paramIndex++}`;
+      params.push(to_date);
+    }
+    
+    // 0 = Not Approved (Pending), 1 = Approved, 2 = Reject
+    if (status === '0') {
+      query += ` AND d.status = 'Pending'`;
+    } else if (status === '1') {
+      query += ` AND d.status = 'Approved'`;
+    } else if (status === '2') {
+      query += ` AND d.status = 'Rejected'`;
+    }
+
+    query += ` ORDER BY d.request_date DESC`;
+
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/debit-requests/status', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { ids, status } = req.body; 
+    if (!['Approved', 'Rejected'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status' });
+    }
+    
+    const query = `UPDATE service_center_debit_requests SET status = $1 WHERE id = ANY($2::int[])`;
+    await pool.query(query, [status, ids]);
+    
+    res.json({ success: true, message: `Successfully ${status.toLowerCase()} ${ids.length} debit requests.` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 app.get('/api/districts', authenticateToken, async (req, res) => {
   try {
     const { rows } = await pool.query(`
@@ -1070,11 +1833,140 @@ app.delete('/api/news/:id', authenticateToken, async (req, res) => {
 });
 
 
+// --- BALANCE REQUESTS ---
+app.get('/api/balance-requests', authenticateToken, async (req, res) => {
+  try {
+    const { accountName, orderId, fromDate, toDate } = req.query;
+    let query = "SELECT * FROM balance_requests WHERE 1=1";
+    let params = [];
+    
+    if (accountName) {
+      params.push(`%${accountName}%`);
+      query += ` AND account_name ILIKE $${params.length}`;
+    }
+    if (orderId) {
+      params.push(`%${orderId}%`);
+      query += ` AND order_id ILIKE $${params.length}`;
+    }
+    if (fromDate) {
+      params.push(fromDate);
+      query += ` AND request_date >= $${params.length}`;
+    }
+    if (toDate) {
+      params.push(toDate);
+      query += ` AND request_date <= $${params.length}`;
+    }
+    
+    query += " ORDER BY id DESC";
+    
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/balance-requests/:id/approve', authenticateToken, authorizeAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { approved_date, bank_name } = req.body;
+    
+    await pool.query(
+      "UPDATE balance_requests SET status = 'Approved', approved_date = $1, bank_name = $2 WHERE id = $3",
+      [approved_date, bank_name, id]
+    );
+    res.json({ success: true, message: 'Request approved successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// --- ONLINE REQUESTS ---
+app.get('/api/online-requests', authenticateToken, async (req, res) => {
+  try {
+    const { branchName, filterType, searchStr, planName, status, fromDate, toDate } = req.query;
+    let query = "SELECT * FROM online_requests WHERE 1=1";
+    let params = [];
+    
+    if (branchName && branchName !== '0' && branchName !== 'ALL') {
+      params.push(branchName);
+      query += ` AND branch_name = $${params.length}`;
+    }
+    
+    if (filterType && filterType !== '0' && searchStr) {
+      params.push(`%${searchStr}%`);
+      const len = params.length;
+      if (filterType === '2') query += ` AND member_name ILIKE $${len}`; // Name
+      if (filterType === '3') query += ` AND contact_no ILIKE $${len}`; // Mobile
+      if (filterType === '4') query += ` AND email ILIKE $${len}`; // Email
+      if (filterType === '5') query += ` AND city ILIKE $${len}`; // City
+      if (filterType === '10') query += ` AND reference_no ILIKE $${len}`; // Reference Id
+    }
+    
+    if (planName && planName !== '0' && planName !== 'All') {
+      params.push(planName);
+      query += ` AND plan_name = $${params.length}`;
+    }
+    
+    if (status && status !== '-1' && status !== 'All') {
+      let statusStr = status === '1' ? 'Approved' : (status === '2' ? 'Rejected' : 'Pending');
+      params.push(statusStr);
+      query += ` AND status = $${params.length}`;
+    }
+    
+    if (fromDate) {
+      params.push(fromDate);
+      query += ` AND request_date >= $${params.length}`;
+    }
+    if (toDate) {
+      params.push(toDate);
+      query += ` AND request_date <= $${params.length}`;
+    }
+    
+    query += " ORDER BY id DESC";
+    
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/online-requests/:id/approve', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { approved_date, remark, status } = req.body;
+    
+    await pool.query(
+      "UPDATE online_requests SET status = $1, approved_date = $2, remark = $3 WHERE id = $4",
+      [status || 'Approved', approved_date, remark, id]
+    );
+    res.json({ success: true, message: `Request ${status || 'Approved'} successfully` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// (Duplicate /api/bank-details alias removed — use /api/bankdetails instead)
+
 // Serve frontend in production
 app.use(express.static(path.join(__dirname, '../dist')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
+
+// 🛡️ Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('[UNHANDLED ERROR]', err.stack);
+  res.status(500).json({ success: false, message: 'An internal server error occurred' });
+});
+process.on('unhandledRejection', (reason) => console.error('[UNHANDLED REJECTION]', reason));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

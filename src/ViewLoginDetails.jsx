@@ -241,56 +241,73 @@ function ViewLoginDetails() {
       <style>
         {`
           .solid-panel {
-            background-color: #ffffff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            box-shadow: 0 16px 40px rgba(31, 38, 135, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.9);
+            border-left: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
           }
           .filter-panel {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
           }
           .solid-label {
             display: flex;
             align-items: center;
             gap: 6px;
             font-size: 0.8rem;
-            font-weight: 600;
-            color: #334155;
+            font-weight: 700;
+            color: #475569;
             margin-bottom: 6px;
           }
           .solid-input {
             width: 100%;
             padding: 8px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
             font-size: 0.85rem;
             color: #0f172a;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.3s ease;
           }
           .solid-input:focus {
-            border-color: #0052cc;
-            box-shadow: 0 0 0 1px #0052cc;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
           }
           .solid-btn {
-            background-color: #0052cc;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
             color: white;
             border: none;
-            transition: background-color 0.2s;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s ease;
           }
           .solid-btn:hover:not(:disabled) {
-            background-color: #0043a6;
+            background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
           }
           .table-solid-header th {
-            background-color: #1e293b;
+            background-color: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
             color: #ffffff;
-            border: 1px solid #334155;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+          }
+          .table-row-hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: background-color 0.2s;
           }
           .table-row-hover:hover td {
-            background-color: #f1f5f9;
+            background-color: rgba(255, 255, 255, 0.7);
           }
           .role-badge {
             display: inline-block;
@@ -307,8 +324,8 @@ function ViewLoginDetails() {
       </style>
 
       {/* Header section */}
-      <div className="no-print solid-panel" style={{ padding: '20px', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px', marginBottom: '20px' }}>
+      <div className="no-print solid-panel" style={{ padding: '24px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.4)', paddingBottom: '16px', marginBottom: '20px' }}>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0052cc" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
@@ -325,9 +342,9 @@ function ViewLoginDetails() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  backgroundColor: '#f8fafc',
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                   color: '#475569',
-                  border: '1px solid #cbd5e1',
+                  border: '1px solid rgba(255, 255, 255, 0.6)',
                   padding: '6px 16px',
                   borderRadius: '6px',
                   fontSize: '0.85rem',
@@ -347,8 +364,8 @@ function ViewLoginDetails() {
                   top: '100%',
                   right: '0',
                   marginTop: '8px',
-                  backgroundColor: 'white',
-                  border: '1px solid #e2e8f0',
+                  backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
+                  border: '1px solid rgba(255, 255, 255, 0.6)',
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                   zIndex: 50,
@@ -366,7 +383,7 @@ function ViewLoginDetails() {
                   </button>
                   <button 
                     onClick={() => { setShowExportMenu(false); handlePrint(); }}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', border: 'none', backgroundColor: 'transparent', textAlign: 'left', fontSize: '0.85rem', cursor: 'pointer', color: '#1e293b', borderTop: '1px solid #e2e8f0' }}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', border: 'none', backgroundColor: 'transparent', textAlign: 'left', fontSize: '0.85rem', cursor: 'pointer', color: '#1e293b', borderTop: '1px solid rgba(255, 255, 255, 0.4)' }}
                     onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
@@ -409,8 +426,8 @@ function ViewLoginDetails() {
         )}
 
         {/* Filters Panel */}
-        <div className="filter-panel" style={{ padding: '16px', marginBottom: '20px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+        <div className="filter-panel" style={{ padding: '20px', marginBottom: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '20px' }}>
             
             {/* Branch Dropdown */}
             <div>
@@ -475,7 +492,7 @@ function ViewLoginDetails() {
           </div>
           
           {/* Search Button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #e2e8f0', paddingTop: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.4)', paddingTop: '20px' }}>
             <button 
               className="solid-btn"
               onClick={handleSearch}
@@ -498,7 +515,7 @@ function ViewLoginDetails() {
         </div>
 
         {/* Results Data Table (Printable Area) */}
-        <div id="printable-report" style={{ backgroundColor: 'white' }}>
+        <div id="printable-report" style={{ backgroundColor: 'transparent' }}>
           
           {/* Print Only Header matching the requested design */}
           <div className="print-header" style={{ marginBottom: '20px', textAlign: 'center', borderBottom: '2px solid #1e293b', paddingBottom: '20px' }}>
@@ -529,15 +546,15 @@ function ViewLoginDetails() {
               </div>
             </div>
             
-            <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '10px', paddingTop: '10px' }}>
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.4)', marginTop: '10px', paddingTop: '10px' }}>
               <h3 style={{ margin: 0, fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase' }}>
                 LOGIN DETAILS FROM DATE {fromDate.split('-').reverse().join('/')} TO {toDate.split('-').reverse().join('/')}
               </h3>
             </div>
           </div>
 
-          <div style={{ overflowX: 'auto', border: '1px solid #cbd5e1', borderRadius: '4px', backgroundColor: '#ffffff' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+          <div style={{ overflowX: 'auto', border: '1px solid rgba(255,255,255,0.6)', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(31, 38, 135, 0.05)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
                 <tr className="table-solid-header" style={{ textAlign: 'left' }}>
                   <th style={{ padding: '10px 12px', fontWeight: '600', border: '1px solid #334155' }}>Sl No</th>
@@ -560,7 +577,7 @@ function ViewLoginDetails() {
                   </tr>
                 ) : history.length === 0 ? (
                   <tr className="no-print">
-                    <td colSpan="6" style={{ padding: '48px', textAlign: 'center', color: '#64748b', backgroundColor: '#ffffff' }}>
+                    <td colSpan="6" style={{ padding: '48px', textAlign: 'center', color: '#64748b' }}>
                       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" style={{ marginBottom: '8px' }}>
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                         <line x1="3" y1="9" x2="21" y2="9"></line>
@@ -573,19 +590,19 @@ function ViewLoginDetails() {
                   history.map((record, idx) => {
                     const roleClass = record.user_type === 'Admin' ? 'role-Admin' : (record.user_type?.includes('Branch') ? 'role-Branch' : 'role-Other');
                     return (
-                      <tr key={record.id} className="table-row-hover" style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f8fafc', borderBottom: '1px solid #cbd5e1' }}>
-                        <td style={{ padding: '8px 12px', color: '#334155', border: '1px solid #cbd5e1' }}>{idx + 1}</td>
-                        <td style={{ padding: '8px 12px', color: '#0052cc', fontWeight: '600', border: '1px solid #cbd5e1' }}>{record.username}</td>
-                        <td style={{ padding: '8px 12px', border: '1px solid #cbd5e1' }}>
+                      <tr key={record.id} className="table-row-hover" style={{ borderBottom: '1px solid rgba(255,255,255,0.4)' }}>
+                        <td style={{ padding: '12px', color: '#334155', borderRight: '1px solid rgba(255,255,255,0.4)' }}>{idx + 1}</td>
+                        <td style={{ padding: '12px', color: '#0052cc', fontWeight: '700', borderRight: '1px solid rgba(255,255,255,0.4)' }}>{record.username}</td>
+                        <td style={{ padding: '12px', borderRight: '1px solid rgba(255,255,255,0.4)' }}>
                           <span className={`role-badge ${roleClass}`}>
                             {record.user_type}
                           </span>
                         </td>
-                        <td style={{ padding: '8px 12px', color: '#0f172a', fontWeight: '500', border: '1px solid #cbd5e1' }}>{record.branch_name || 'Admin HQ'}</td>
-                        <td style={{ padding: '8px 12px', color: '#334155', border: '1px solid #cbd5e1' }}>
+                        <td style={{ padding: '12px', color: '#0f172a', fontWeight: '600', borderRight: '1px solid rgba(255,255,255,0.4)' }}>{record.branch_name || 'Admin HQ'}</td>
+                        <td style={{ padding: '12px', color: '#334155', borderRight: '1px solid rgba(255,255,255,0.4)' }}>
                           {new Date(record.login_time).toLocaleString()}
                         </td>
-                        <td style={{ padding: '8px 12px', color: '#0f172a', fontFamily: 'monospace', border: '1px solid #cbd5e1' }}>
+                        <td style={{ padding: '12px', color: '#0f172a', fontFamily: 'monospace' }}>
                           {record.ip_address || '127.0.0.1'}
                         </td>
                       </tr>

@@ -77,7 +77,7 @@ function EodBod() {
     <div style={{ maxWidth: '1000px', margin: '0 auto', fontFamily: 'Inter, sans-serif' }}>
       
       {/* Header section similar to modern dashboard styling */}
-      <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '24px' }}>
+      <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '24px' }}>
         <h2 style={{ margin: '0 0 24px 0', fontSize: '1.25rem', color: '#1e293b', fontWeight: '700', borderBottom: '2px solid #f1f5f9', paddingBottom: '12px' }}>
           End / Begin Of Day
         </h2>
@@ -107,11 +107,11 @@ function EodBod() {
               readOnly
               style={{
                 padding: '8px 12px',
-                border: '1px solid #cbd5e1',
+                border: '1px solid rgba(255, 255, 255, 0.6)',
                 borderRadius: '6px',
                 fontSize: '0.95rem',
                 color: '#334155',
-                backgroundColor: '#f8fafc',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                 width: '120px',
                 cursor: 'not-allowed',
                 fontWeight: '500'
@@ -148,7 +148,7 @@ function EodBod() {
           <div style={{ backgroundColor: '#e0f2fe', padding: '12px 16px', borderLeft: '4px solid #0284c7', borderRadius: '0 6px 6px 0', marginBottom: '16px' }}>
             <h3 style={{ margin: 0, fontSize: '1rem', color: '#0369a1', fontWeight: '700' }}>Not Approved Transaction Summary</h3>
           </div>
-          <div style={{ padding: '24px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', color: '#64748b', textAlign: 'center', fontSize: '0.9rem' }}>
+          <div style={{ padding: '24px', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.6)', color: '#64748b', textAlign: 'center', fontSize: '0.9rem' }}>
             No unapproved transactions found.
           </div>
         </div>
@@ -160,10 +160,10 @@ function EodBod() {
             <span style={{ fontSize: '1rem', fontWeight: '800', color: '#0052cc' }}>Total Amount: {totalAmount.toFixed(2)}</span>
           </div>
           
-          <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+          <div style={{ overflowX: 'auto', border: '1px solid rgba(255, 255, 255, 0.6)', borderRadius: '8px' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
-                <tr style={{ backgroundColor: '#1e293b', color: 'white', textAlign: 'left' }}>
+                <tr style={{ backgroundColor: 'rgba(30, 41, 59, 0.85)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', color: 'white', textAlign: 'left' }}>
                   <th style={{ padding: '12px 16px', fontWeight: '600' }}>Sl No</th>
                   <th style={{ padding: '12px 16px', fontWeight: '600' }}>Branch</th>
                   <th style={{ padding: '12px 16px', fontWeight: '600' }}>Type</th>
@@ -197,7 +197,7 @@ function EodBod() {
                   </tr>
                 ) : (
                   transactions.map((tx, idx) => (
-                    <tr key={tx.id || idx} style={{ backgroundColor: idx % 2 === 0 ? 'white' : '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                    <tr key={tx.id || idx} style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)', borderBottom: '1px solid rgba(255, 255, 255, 0.4)' }}>
                       <td style={{ padding: '10px 16px', color: '#475569' }}>{idx + 1}</td>
                       <td style={{ padding: '10px 16px', color: '#1e293b', fontWeight: '500' }}>{tx.branch}</td>
                       <td style={{ padding: '10px 16px', color: '#475569' }}>{tx.type}</td>
