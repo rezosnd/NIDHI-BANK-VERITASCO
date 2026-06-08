@@ -57,6 +57,7 @@ import DesignationMaster from './DesignationMaster';
 import DesignationMenuRights from './DesignationMenuRights';
 import BranchUserRights from './BranchUserRights';
 import ServiceCenterUserRights from './ServiceCenterUserRights';
+import CreateEmployee from './CreateEmployee';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
 import './FandomLogin.css';
@@ -226,9 +227,9 @@ function Dashboard({ user, onLogout }) {
     return () => clearInterval(timer);
   }, []);
 
-  const isBranchUser = user?.role?.includes('Branch');
-  const isServiceCenterUser = user?.role?.includes('Service Center');
-  const isAdmin = !isBranchUser && !isServiceCenterUser;
+  const isAdmin = user?.role === 'Admin';
+  const isServiceCenterUser = user?.role?.includes('Service Center') || user?.service_center_id != null;
+  const isBranchUser = !isAdmin && !isServiceCenterUser;
 
   const filteredNav = TOP_NAV.filter(item => {
     if (isBranchUser) {
@@ -547,6 +548,7 @@ function Dashboard({ user, onLogout }) {
                    activeView === 'Designation Menu Rights' ? <DesignationMenuRights /> :
                    activeView === 'Branch User Rights' ? <BranchUserRights /> :
                    (activeView === 'Service Center User Rights' || activeView?.toLowerCase() === 'service center user rights') ? <ServiceCenterUserRights /> :
+                   activeView === 'Create Employee' ? <CreateEmployee /> :
                    activeView === 'Lock Setting' ? <LockSetting /> :
                    activeView === 'EOD/BOD' ? <EodBod /> :
                    activeView === 'View Login Details' ? <ViewLoginDetails /> :

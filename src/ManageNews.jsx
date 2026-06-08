@@ -7,7 +7,7 @@ export default function ManageNews({ view, user }) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   
-  const isAdmin = !user?.role?.includes('Branch');
+  const isAdmin = user?.role === 'Admin';
   const [isCreating, setIsCreating] = useState(isAdmin && view === 'Create News');
   
   // Search state
