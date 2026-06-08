@@ -39,6 +39,24 @@ import ManageCalendar from './ManageCalendar';
 import ManageEvents from './ManageEvents';
 import ManageHolidays from './ManageHolidays';
 import ManageRelationship from './ManageRelationship';
+import ShareParameters from './ShareParameters';
+import FeeParameter from './FeeParameter';
+import SbAccountsParameters from './SbAccountsParameters';
+import SbAccountType from './SbAccountType';
+import PlanParameters from './PlanParameters';
+import PlanPrematuritySlabs from './PlanPrematuritySlabs';
+import ApprovalLimitParameters from './ApprovalLimitParameters';
+import ServiceDeduction from './ServiceDeduction';
+import DepositTDSParameter from './DepositTDSParameter';
+import AddServiceCharge from './AddServiceCharge';
+import OdAccountParameters from './OdAccountParameters';
+import LateFeesSettings from './LateFeesSettings';
+import HolidayList from './HolidayList';
+import AddUpdateParameter from './AddUpdateParameter';
+import DesignationMaster from './DesignationMaster';
+import DesignationMenuRights from './DesignationMenuRights';
+import BranchUserRights from './BranchUserRights';
+import ServiceCenterUserRights from './ServiceCenterUserRights';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
 import './FandomLogin.css';
@@ -153,12 +171,17 @@ function Dashboard({ user, onLogout }) {
     return () => clearTimeout(timer);
   }, [activeView]);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [openDropdownMenu, setOpenDropdownMenu] = useState(null);
   const profileMenuRef = useRef(null);
+  const navRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
         setIsProfileMenuOpen(false);
+      }
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        setOpenDropdownMenu(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -317,7 +340,7 @@ function Dashboard({ user, onLogout }) {
       
       <NewsTicker receiverType={isBranchUser ? 'Branch' : 'ALL'} />
 
-      <nav className={`top-navbar ${isSidebarOpen ? 'mobile-open' : ''}`}>
+      <nav className={`top-navbar ${isSidebarOpen ? 'mobile-open' : ''}`} ref={navRef}>
         <div 
           className={`nav-item ${activeView === 'Dashboard' ? 'active' : ''}`}
           onClick={() => handleNavigate('Dashboard')}
@@ -347,11 +370,13 @@ function Dashboard({ user, onLogout }) {
           return (
             <div 
               key={item.name} 
-              className={`nav-item ${isActive ? 'active' : ''}`}
+              className={`nav-item ${isActive ? 'active' : ''} ${openDropdownMenu === item.name ? 'click-dropdown-open' : ''}`}
               onClick={(e) => {
                 if (!item.subItems) {
                   handleNavigate(item.name);
+                  setOpenDropdownMenu(null);
                 } else {
+                  setOpenDropdownMenu(openDropdownMenu === item.name ? null : item.name);
                   e.currentTarget.classList.toggle('mobile-dropdown-open');
                 }
               }}
@@ -388,6 +413,7 @@ function Dashboard({ user, onLogout }) {
                       onClick={(e) => { 
                         e.stopPropagation(); 
                         handleNavigate(sub); 
+                        setOpenDropdownMenu(null);
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = `${item.color}15`;
@@ -503,6 +529,24 @@ function Dashboard({ user, onLogout }) {
                    (activeView === 'Manage Events' || activeView?.toLowerCase() === 'manage events' || activeView?.toLowerCase() === 'manage-events') ? <ManageEvents onNavigate={handleNavigate} /> :
                    (activeView === 'Manage Holidays' || activeView?.toLowerCase() === 'manage holidays' || activeView?.toLowerCase() === 'manage-holidays' || activeView === 'Holiday List' || activeView?.toLowerCase() === 'holiday list' || activeView?.toLowerCase() === 'holiday-list') ? <ManageHolidays onNavigate={handleNavigate} /> :
                    (activeView === 'Relationship' || activeView?.toLowerCase() === 'relationship') ? <ManageRelationship onNavigate={handleNavigate} /> :
+                   (activeView === 'Share Parameter' || activeView?.toLowerCase() === 'share parameter' || activeView?.toLowerCase() === 'share-parameter') ? <ShareParameters onNavigate={handleNavigate} /> :
+                   (activeView === 'Fee Parameter' || activeView?.toLowerCase() === 'fee parameter' || activeView?.toLowerCase() === 'fee-parameter') ? <FeeParameter onNavigate={handleNavigate} /> :
+                   (activeView === 'SB Accounts Parameters' || activeView?.toLowerCase() === 'sb accounts parameters') ? <SbAccountsParameters onNavigate={handleNavigate} /> :
+                   (activeView === 'SB / OD Account Type' || activeView?.toLowerCase() === 'sb / od account type') ? <SbAccountType onNavigate={handleNavigate} /> :
+                   (activeView === 'Plan Parameters' || activeView?.toLowerCase() === 'plan parameters') ? <PlanParameters onNavigate={handleNavigate} /> :
+                   (activeView === 'Add Prematurity Slabs' || activeView?.toLowerCase() === 'add prematurity slabs') ? <PlanPrematuritySlabs onNavigate={handleNavigate} /> :
+                   (activeView === 'Approvals Limit Parameters' || activeView?.toLowerCase() === 'approvals limit parameters') ? <ApprovalLimitParameters onNavigate={handleNavigate} /> :
+                   (activeView === 'Service Deduction' || activeView?.toLowerCase() === 'service deduction') ? <ServiceDeduction onNavigate={handleNavigate} /> :
+                   (activeView === 'Deposit TDS Parameter' || activeView?.toLowerCase() === 'deposit tds parameter') ? <DepositTDSParameter onNavigate={handleNavigate} /> :
+                   (activeView === 'Add Service Charge' || activeView?.toLowerCase() === 'add service charge') ? <AddServiceCharge onNavigate={handleNavigate} /> :
+                   (activeView === 'OD Account Parameters' || activeView?.toLowerCase() === 'od account parameters' || activeView === "OD Account Parameter's") ? <OdAccountParameters onNavigate={handleNavigate} /> :
+                   (activeView === 'Late Fee Parameter' || activeView?.toLowerCase() === 'late fees settings') ? <LateFeesSettings onNavigate={handleNavigate} /> :
+                   (activeView === 'Holiday List' || activeView?.toLowerCase() === 'holiday list') ? <HolidayList onNavigate={handleNavigate} /> :
+                   (activeView === 'OD Account Parameters' || activeView === 'Late Fee Parameter') ? <AddUpdateParameter viewType={activeView} onNavigate={handleNavigate} /> :
+                   (activeView === 'Designation Master' || activeView === 'Manage Designation' || activeView === 'Designation Tree View') ? <DesignationMaster initialTab={activeView === 'Designation Tree View' ? 'tree' : 'manage'} /> :
+                   activeView === 'Designation Menu Rights' ? <DesignationMenuRights /> :
+                   activeView === 'Branch User Rights' ? <BranchUserRights /> :
+                   (activeView === 'Service Center User Rights' || activeView?.toLowerCase() === 'service center user rights') ? <ServiceCenterUserRights /> :
                    activeView === 'Lock Setting' ? <LockSetting /> :
                    activeView === 'EOD/BOD' ? <EodBod /> :
                    activeView === 'View Login Details' ? <ViewLoginDetails /> :

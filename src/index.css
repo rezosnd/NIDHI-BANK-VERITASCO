@@ -183,14 +183,14 @@ body {
 .nav-dropdown::before {
   content: '';
   position: absolute;
-  top: -0.5rem;
-  left: 0;
-  right: 0;
-  height: 0.5rem;
+  top: -1rem; /* Extend further up to fully bridge the gap */
+  left: -0.5rem; /* Add some horizontal padding to the bridge */
+  right: -0.5rem;
+  height: 1rem;
 }
 
 @media (min-width: 769px) {
-  .nav-item:hover .nav-dropdown {
+  .nav-item.click-dropdown-open .nav-dropdown {
     display: flex;
   }
 }

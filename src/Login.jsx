@@ -3,8 +3,7 @@ import './FandomLogin.css';
 
 function EarthGlobe() {
   return (
-    <div className="css-fandom-globe">
-    </div>
+    <div className="css-fandom-globe"></div>
   );
 }
 
@@ -31,7 +30,7 @@ function Login({ onLogin }) {
     e.preventDefault();
     setError('');
     if (parseInt(captchaInput) !== captchaAnswer) {
-      setError('Incorrect security code. Please try again.');
+      setError('Incorrect security verification code.');
       generateCaptcha();
       return;
     }
@@ -52,42 +51,45 @@ function Login({ onLogin }) {
         generateCaptcha();
       }
     } catch {
-      setError('Cannot connect to server.');
+      setError('Cannot connect to secure server.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="fandom-container">
-      {/* 3D Earth Globe */}
-      <div className="fandom-globe-wrapper">
+    <div className="premium-login-container">
+      {/* Immersive 3D Globe Background */}
+      <div className="premium-globe-wrapper">
         <EarthGlobe />
       </div>
 
-      <div className="login-form-area">
-        <div className="login-form-header">
-          <h1 className="company-name">VERITASCO NIDHI BANK</h1>
-          <p className="company-tagline">Advanced Financial Infrastructure & Secure Banking</p>
+      <div className="login-content-area">
+        <div className="login-header-branding">
+          <h1 className="premium-company-name">VERITASCO NIDHI</h1>
+          <p className="premium-company-tagline">Enterprise Banking Infrastructure</p>
         </div>
 
-        <div className="debit-card-wrapper">
-          <div className="card-header">
+        {/* The Premium ATM Card Login Interface */}
+        <div className="premium-atm-card">
+          <div className="card-top-row">
             <img src="/veritasco.png" alt="VeritasCo Logo" className="card-bank-logo" />
             <svg className="contactless-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 8a12 12 0 0 1 16 0"/><path d="M7 12a8 8 0 0 1 10 0"/><path d="M10 16a4 4 0 0 1 4 0"/><path d="M12 20h.01"/>
             </svg>
           </div>
 
-          <div className="card-chip"></div>
+          <div className="card-chip-container">
+            <div className="premium-card-chip"></div>
+          </div>
 
-          <form onSubmit={handleSubmit} className="card-form-elements">
+          <form onSubmit={handleSubmit} className="card-form-body">
             <div className="card-input-group">
-              <label>USER ID / EMAIL</label>
+              <label>AUTHORIZED USER ID</label>
               <input 
                 type="text" 
-                placeholder="YOUR USERNAME" 
-                className="card-input"
+                placeholder="ENTER USERNAME" 
+                className="premium-card-input"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 autoComplete="username"
@@ -95,13 +97,13 @@ function Login({ onLogin }) {
               />
             </div>
 
-            <div className="card-input-row">
+            <div className="card-split-inputs">
               <div className="card-input-group">
-                <label>PIN / PASSCODE</label>
+                <label>SECURE PIN</label>
                 <input 
                   type="password" 
-                  placeholder="••••" 
-                  className="card-input"
+                  placeholder="••••••••" 
+                  className="premium-card-input"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   autoComplete="current-password"
@@ -109,11 +111,11 @@ function Login({ onLogin }) {
                 />
               </div>
               <div className="card-input-group">
-                <label>SEC: {captchaCode}</label>
+                <label>AUTH: {captchaCode}</label>
                 <input 
                   type="text" 
                   placeholder="RESULT" 
-                  className="card-input"
+                  className="premium-card-input"
                   value={captchaInput}
                   onChange={e => setCaptchaInput(e.target.value)}
                   required
@@ -121,18 +123,18 @@ function Login({ onLogin }) {
               </div>
             </div>
 
-            <button type="submit" className="card-btn" disabled={isLoading}>
-              {isLoading ? 'PROCESSING...' : 'LOGIN'}
+            {error && <div className="card-error-message">{error}</div>}
+
+            <button type="submit" className="premium-card-button" disabled={isLoading}>
+              {isLoading ? 'AUTHENTICATING...' : 'SECURE LOGIN'}
             </button>
           </form>
 
-          {error && <div className="fandom-error">{error}</div>}
-
-          <div className="card-footer">
-            <span className="card-brand">VeritasCo</span>
+          <div className="card-bottom-row">
+            <span className="card-embossed-name">VERITASCO ENTERPRISE</span>
             <div className="card-network-circles">
-              <div className="card-circle red"></div>
-              <div className="card-circle yellow"></div>
+              <div className="circle circle-red"></div>
+              <div className="circle circle-blue"></div>
             </div>
           </div>
         </div>

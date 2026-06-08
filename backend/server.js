@@ -144,6 +144,23 @@ async function initDb() {
       pin_code VARCHAR(50),
       status VARCHAR(50) DEFAULT 'Active'
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS designations (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL UNIQUE,
+      parent_id INTEGER REFERENCES designations(id) ON DELETE SET NULL,
+      status VARCHAR(50) DEFAULT 'Active',
+      no_of_employee INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS designation_menu_rights (
+      id SERIAL PRIMARY KEY,
+      designation_id INTEGER REFERENCES designations(id) ON DELETE CASCADE,
+      menu_name VARCHAR(255) NOT NULL,
+      UNIQUE(designation_id, menu_name)
+    )`);
+    
     await pool.query(`CREATE TABLE IF NOT EXISTS company_profile (
       id SERIAL PRIMARY KEY,
       company_name VARCHAR(255),
@@ -192,6 +209,15 @@ async function initDb() {
     if (parseInt(settingsRows[0].count) === 0) {
       await pool.query("INSERT INTO system_settings (settings_data) VALUES ('{}')");
     }
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS share_parameter_history (
+      id SERIAL PRIMARY KEY,
+      change_type VARCHAR(50) NOT NULL,
+      changed_fields JSONB DEFAULT '{}',
+      previous_values JSONB DEFAULT '{}',
+      current_values JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
 
     await pool.query(`CREATE TABLE IF NOT EXISTS service_tax (
       id SERIAL PRIMARY KEY,
@@ -550,6 +576,18 @@ async function initDb() {
             await pool.query("INSERT INTO relationships (code, description) VALUES ($1, $2)", [code, desc]);
         }
     }
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS parameters (
+      id SERIAL PRIMARY KEY,
+      param_type VARCHAR(100) NOT NULL,
+      param_name VARCHAR(255) NOT NULL,
+      param_value VARCHAR(255),
+      description TEXT,
+      status VARCHAR(50) DEFAULT 'Active',
+      created_by VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`);
 
     console.log("Database schema initialized successfully.");
   } catch (error) {
@@ -1320,9 +1358,166 @@ app.get('/api/settings', authenticateToken, async (req, res) => {
 
 app.put('/api/settings', authenticateToken, async (req, res) => {
   try {
-    const settingsData = req.body;
-    await pool.query("UPDATE system_settings SET settings_data = $1 WHERE id = (SELECT id FROM system_settings ORDER BY id ASC LIMIT 1)", [settingsData]);
+    const incomingSettings = req.body || {};
+    const { rows } = await pool.query("SELECT settings_data FROM system_settings ORDER BY id ASC LIMIT 1");
+    const currentSettings = rows[0]?.settings_data || {};
+    const mergedSettings = { ...currentSettings, ...incomingSettings };
+
+    const historyGroups = [
+      {
+        changeType: 'share_value',
+        fields: ['share_member_type', 'share_value', 'min_shares', 'max_shares', 'dividend_declared']
+      },
+      {
+        changeType: 'promoter_member',
+        fields: ['no_of_promoter', 'min_members']
+      },
+      {
+        changeType: 'authorised_capital',
+        fields: ['authorised_capital']
+      },
+      {
+        changeType: 'paidup_capital',
+        fields: ['paidup_capital']
+      },
+      {
+        changeType: 'fee_parameter',
+        fields: ['fee_member_type', 'fee_share', 'fee_adm', 'fee_death', 'fee_building', 'fee_other1', 'fee_other2']
+      },
+      ...([1,2,3,4,5,6,7,8,9,10].map(id => ({
+        changeType: 'sb_accounts',
+        fields: [
+          `sb_${id}_type_name`, `sb_${id}_min_bal`, `sb_${id}_max_bal`, `sb_${id}_roi`, 
+          `sb_${id}_min_period`, `sb_${id}_preclosure_chg`, `sb_${id}_penalty_min_bal`, 
+          `sb_${id}_min_bal_with_chq_staff`, `sb_${id}_min_bal_without_chq_staff`, 
+          `sb_${id}_roi_staff`, `sb_${id}_is_display_website`, `sb_${id}_atm_charges`, 
+          `sb_${id}_txn_limit`, `sb_${id}_per_day_limit`
+        ]
+      }))),
+      {
+        changeType: 'sb_account_types',
+        fields: ['sb_account_types', 'od_account_types']
+      },
+      {
+        changeType: 'plan_parameters',
+        fields: ['plan_parameters']
+      },
+      {
+        changeType: 'prematurity_slabs',
+        fields: ['prematurity_slabs']
+      },
+      {
+        changeType: 'approval_limit_parameters',
+        fields: ['approval_limit_parameters']
+      },
+      {
+        changeType: 'service_deductions',
+        fields: ['service_deductions']
+      },
+      {
+        changeType: 'service_charge_categories',
+        fields: ['service_charge_categories']
+      },
+      {
+        changeType: 'deposit_tds_parameters',
+        fields: ['deposit_tds_parameters']
+      },
+      {
+        changeType: 'tds_types',
+        fields: ['tds_types']
+      },
+      {
+        changeType: 'loan_service_charges',
+        fields: ['loan_service_charges']
+      },
+      {
+        changeType: 'od_parameters',
+        fields: ['od_parameters']
+      },
+      {
+        changeType: 'od_interest_types',
+        fields: ['od_interest_types']
+      },
+      {
+        changeType: 'late_fees',
+        fields: ['late_fees']
+      },
+      {
+        changeType: 'branches',
+        fields: ['branches']
+      },
+      {
+        changeType: 'holidays',
+        fields: ['holidays']
+      }
+    ];
+
+    const historyEntries = historyGroups
+      .map(group => {
+        const changedFields = group.fields.filter(field => incomingSettings[field] !== undefined && incomingSettings[field] !== currentSettings[field]);
+        if (changedFields.length === 0) {
+          return null;
+        }
+
+        const previousValues = {};
+        const currentValues = {};
+        const changedFieldMap = {};
+
+        changedFields.forEach(field => {
+          previousValues[field] = currentSettings[field] ?? null;
+          currentValues[field] = mergedSettings[field] ?? null;
+          changedFieldMap[field] = {
+            previous: currentSettings[field] ?? null,
+            current: mergedSettings[field] ?? null
+          };
+        });
+
+        return {
+          changeType: group.changeType,
+          changedFields: changedFieldMap,
+          previousValues,
+          currentValues
+        };
+      })
+      .filter(Boolean);
+
+    await pool.query(
+      "UPDATE system_settings SET settings_data = $1 WHERE id = (SELECT id FROM system_settings ORDER BY id ASC LIMIT 1)",
+      [mergedSettings]
+    );
+
+    for (const entry of historyEntries) {
+      await pool.query(
+        "INSERT INTO share_parameter_history (change_type, changed_fields, previous_values, current_values) VALUES ($1, $2, $3, $4)",
+        [entry.changeType, entry.changedFields, entry.previousValues, entry.currentValues]
+      );
+    }
+
     res.json({ success: true, message: 'Settings updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/share-parameters/history', authenticateToken, async (req, res) => {
+  try {
+    const { type } = req.query;
+    const params = [];
+    let sql = `
+      SELECT id, change_type, changed_fields, previous_values, current_values, created_at
+      FROM share_parameter_history
+    `;
+
+    if (type) {
+      params.push(type);
+      sql += ` WHERE change_type = $1`;
+    }
+
+    sql += ` ORDER BY id DESC`;
+
+    const { rows } = await pool.query(sql, params);
+    res.json(rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -2406,7 +2601,385 @@ app.delete('/api/relationships/:id', authenticateToken, authorizeAdmin, async (r
   }
 });
 
-// Serve frontend in production
+// ==========================================
+// Parameters API
+// ==========================================
+
+app.get('/api/parameters', authenticateToken, async (req, res) => {
+  const { type } = req.query;
+  try {
+    let query = "SELECT * FROM parameters";
+    let params = [];
+    if (type) {
+      query += " WHERE param_type = $1";
+      params.push(type);
+    }
+    query += " ORDER BY param_name ASC";
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/parameters', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { param_type, param_name, param_value, description, status } = req.body;
+  try {
+    const sql = `INSERT INTO parameters (param_type, param_name, param_value, description, status, created_by) 
+                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
+    const { rows } = await pool.query(sql, [param_type, param_name, param_value, description, status || 'Active', req.user.username]);
+    res.json({ success: true, parameter: rows[0], message: 'Parameter added successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.put('/api/parameters/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { param_type, param_name, param_value, description, status } = req.body;
+  try {
+    const sql = `UPDATE parameters 
+                 SET param_type = $1, param_name = $2, param_value = $3, description = $4, status = $5, updated_at = CURRENT_TIMESTAMP 
+                 WHERE id = $6 RETURNING *`;
+    const { rows } = await pool.query(sql, [param_type, param_name, param_value, description, status, id]);
+    if (rows.length === 0) return res.status(404).json({ success: false, message: 'Parameter not found' });
+    res.json({ success: true, parameter: rows[0], message: 'Parameter updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.delete('/api/parameters/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rowCount } = await pool.query("DELETE FROM parameters WHERE id = $1", [id]);
+    if (rowCount === 0) return res.status(404).json({ success: false, message: 'Parameter not found' });
+    res.json({ success: true, message: 'Parameter deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ==========================================
+// Designations API
+// ==========================================
+
+app.get('/api/designations', authenticateToken, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM designations ORDER BY COALESCE(parent_id, 0) ASC, id ASC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching designations:', err);
+        res.status(500).json({ error: 'Failed to fetch designations' });
+    }
+});
+
+app.post('/api/designations', authenticateToken, async (req, res) => {
+    const { name, parent_id, status, no_of_employee } = req.body;
+    if (!name) return res.status(400).json({ error: 'Designation name is required' });
+    
+    try {
+        const result = await pool.query(
+            'INSERT INTO designations (name, parent_id, status, no_of_employee) VALUES ($1, $2, $3, $4) RETURNING *',
+            [name, parent_id || null, status || 'Active', no_of_employee || 0]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        if (err.code === '23505') {
+            return res.status(400).json({ error: 'Designation already exists' });
+        }
+        console.error('Error creating designation:', err);
+        res.status(500).json({ error: 'Failed to create designation' });
+    }
+});
+
+app.put('/api/designations/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { name, parent_id, status, no_of_employee } = req.body;
+    
+    try {
+        const oldResult = await pool.query('SELECT * FROM designations WHERE id = $1', [id]);
+        if (oldResult.rows.length === 0) return res.status(404).json({ error: 'Designation not found' });
+
+        // Prevent self-referencing parent
+        if (parseInt(parent_id) === parseInt(id)) {
+            return res.status(400).json({ error: 'A designation cannot be its own parent' });
+        }
+
+        const result = await pool.query(
+            'UPDATE designations SET name = $1, parent_id = $2, status = $3, no_of_employee = $4 WHERE id = $5 RETURNING *',
+            [name, parent_id || null, status, no_of_employee || 0, id]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        if (err.code === '23505') {
+            return res.status(400).json({ error: 'Designation name already exists' });
+        }
+        console.error('Error updating designation:', err);
+        res.status(500).json({ error: 'Failed to update designation' });
+    }
+});
+
+app.delete('/api/designations/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const oldResult = await pool.query('SELECT * FROM designations WHERE id = $1', [id]);
+        if (oldResult.rows.length === 0) return res.status(404).json({ error: 'Designation not found' });
+
+        // Check if it has children
+        const childrenResult = await pool.query('SELECT * FROM designations WHERE parent_id = $1', [id]);
+        if (childrenResult.rows.length > 0) {
+            return res.status(400).json({ error: 'Cannot delete designation with sub-designations. Reassign them first.' });
+        }
+
+        await pool.query('DELETE FROM designations WHERE id = $1', [id]);
+        res.json({ message: 'Designation deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting designation:', err);
+        res.status(500).json({ error: 'Failed to delete designation' });
+    }
+});
+
+// Designation Menu Rights API
+app.get('/api/designation-menu-rights/:designationId', authenticateToken, async (req, res) => {
+    try {
+        const { designationId } = req.params;
+        const result = await pool.query('SELECT menu_name FROM designation_menu_rights WHERE designation_id = $1', [designationId]);
+        res.json(result.rows.map(row => row.menu_name));
+    } catch (err) {
+        console.error('Error fetching menu rights:', err);
+        res.status(500).json({ error: 'Failed to fetch menu rights' });
+    }
+});
+
+app.post('/api/designation-menu-rights/:designationId', authenticateToken, async (req, res) => {
+    const { designationId } = req.params;
+    const { menus } = req.body; // Expecting an array of string menu names
+    
+    if (!Array.isArray(menus)) {
+        return res.status(400).json({ error: 'Menus must be an array of menu names' });
+    }
+
+    try {
+        await pool.query('BEGIN');
+        
+        // Delete existing rights for this designation
+        await pool.query('DELETE FROM designation_menu_rights WHERE designation_id = $1', [designationId]);
+        
+        // Insert new rights
+        if (menus.length > 0) {
+            const values = [];
+            const placeholders = [];
+            let i = 1;
+            
+            for (const menu of menus) {
+                placeholders.push(`($1, $${i + 1})`);
+                values.push(menu);
+                i++;
+            }
+            
+            const query = `INSERT INTO designation_menu_rights (designation_id, menu_name) VALUES ${placeholders.join(', ')}`;
+            await pool.query(query, [designationId, ...values]);
+        }
+        
+        await pool.query('COMMIT');
+        res.json({ message: 'Menu rights updated successfully' });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error('Error updating menu rights:', err);
+        res.status(500).json({ error: 'Failed to update menu rights' });
+    }
+});
+
+// ============================================================
+// BRANCH USER RIGHTS APIs
+// ============================================================
+
+// Ensure branch_user_rights table exists
+(async () => {
+    try {
+        await pool.query(`CREATE TABLE IF NOT EXISTS branch_user_rights (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            menu_name VARCHAR(255) NOT NULL,
+            UNIQUE(user_id, menu_name)
+        )`);
+    } catch (e) { console.error('branch_user_rights table init error:', e.message); }
+})();
+
+// ============================================================
+// Service Center User Rights API
+// ============================================================
+
+// Ensure sc_user_rights table exists
+(async () => {
+    try {
+        await pool.query(`CREATE TABLE IF NOT EXISTS sc_user_rights (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            menu_name VARCHAR(255) NOT NULL,
+            UNIQUE(user_id, menu_name)
+        )`);
+    } catch (e) { console.error('sc_user_rights table init error:', e.message); }
+})();
+
+// GET /api/service-centers?branch_id=X — list service centers for a branch
+app.get('/api/service-centers', authenticateToken, async (req, res) => {
+    try {
+        const { branch_id } = req.query;
+        let query = `SELECT id, name, code, branch_id FROM service_centers WHERE 1=1`;
+        const params = [];
+        if (branch_id && branch_id !== '0') {
+            params.push(parseInt(branch_id));
+            query += ` AND branch_id = $${params.length}`;
+        }
+        query += ` ORDER BY name`;
+        const { rows } = await pool.query(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching service centers:', err);
+        res.status(500).json({ error: 'Failed to fetch service centers' });
+    }
+});
+
+// GET /api/sc-users?service_center_id=X — list users for a service center
+app.get('/api/sc-users', authenticateToken, async (req, res) => {
+    try {
+        const { service_center_id } = req.query;
+        let query = `SELECT u.id, u.username, u.contact_name, u.role, u.service_center_id, u.is_active
+                     FROM users u
+                     WHERE u.role ILIKE '%service%center%' OR u.service_center_id IS NOT NULL`;
+        const params = [];
+        if (service_center_id && service_center_id !== '0') {
+            params.push(parseInt(service_center_id));
+            query += ` AND u.service_center_id = $${params.length}`;
+        }
+        query += ` ORDER BY COALESCE(u.contact_name, u.username)`;
+        const { rows } = await pool.query(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching SC users:', err);
+        res.status(500).json({ error: 'Failed to fetch service center users' });
+    }
+});
+
+// GET /api/sc-user-rights/:userId — get menu rights for a specific SC user
+app.get('/api/sc-user-rights/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { rows } = await pool.query(
+            `SELECT menu_name FROM sc_user_rights WHERE user_id = $1`,
+            [parseInt(userId)]
+        );
+        res.json(rows.map(r => r.menu_name));
+    } catch (err) {
+        console.error('Error fetching SC user rights:', err);
+        res.status(500).json({ error: 'Failed to fetch SC user rights' });
+    }
+});
+
+// POST /api/sc-user-rights/:userId — save/update SC user menu rights
+app.post('/api/sc-user-rights/:userId', authenticateToken, async (req, res) => {
+    const { userId } = req.params;
+    const { menus } = req.body;
+    if (!Array.isArray(menus)) return res.status(400).json({ error: 'menus must be an array' });
+    try {
+        await pool.query('BEGIN');
+        await pool.query('DELETE FROM sc_user_rights WHERE user_id = $1', [parseInt(userId)]);
+        if (menus.length > 0) {
+            const placeholders = menus.map((_, i) => `($1, $${i + 2})`).join(', ');
+            await pool.query(
+                `INSERT INTO sc_user_rights (user_id, menu_name) VALUES ${placeholders}`,
+                [parseInt(userId), ...menus]
+            );
+        }
+        await pool.query('COMMIT');
+        res.json({ message: 'SC user rights updated successfully' });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error('Error updating SC user rights:', err);
+        res.status(500).json({ error: 'Failed to update SC user rights' });
+    }
+});
+
+// GET /api/branches - list all branches
+app.get('/api/branches', authenticateToken, async (req, res) => {
+    try {
+        const { rows } = await pool.query(`SELECT id, name, code, status FROM branches ORDER BY name`);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching branches:', err);
+        res.status(500).json({ error: 'Failed to fetch branches' });
+    }
+});
+
+// GET /api/branch-users?branch_id=X&designation_id=Y - list users filtered
+app.get('/api/branch-users', authenticateToken, async (req, res) => {
+    try {
+        const { branch_id, designation_id } = req.query;
+        let query = `SELECT u.id, u.username, u.contact_name, u.role, u.branch_id, u.is_active FROM users u WHERE u.role != 'Admin'`;
+        const params = [];
+        if (branch_id && branch_id !== '0') {
+            params.push(parseInt(branch_id));
+            query += ` AND u.branch_id = $${params.length}`;
+        }
+        if (designation_id && designation_id !== '0') {
+            params.push(parseInt(designation_id));
+            query += ` AND u.role = (SELECT name FROM designations WHERE id = $${params.length})`;
+        }
+        query += ` ORDER BY COALESCE(u.contact_name, u.username)`;
+        const { rows } = await pool.query(query, params);
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching branch users:', err);
+        res.status(500).json({ error: 'Failed to fetch branch users' });
+    }
+});
+
+// GET /api/branch-user-rights/:userId - get menu rights for a specific user
+app.get('/api/branch-user-rights/:userId', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { rows } = await pool.query(
+            `SELECT menu_name FROM branch_user_rights WHERE user_id = $1`,
+            [parseInt(userId)]
+        );
+        res.json(rows.map(r => r.menu_name));
+    } catch (err) {
+        console.error('Error fetching branch user rights:', err);
+        res.status(500).json({ error: 'Failed to fetch user rights' });
+    }
+});
+
+// POST /api/branch-user-rights/:userId - save/update user menu rights
+app.post('/api/branch-user-rights/:userId', authenticateToken, async (req, res) => {
+    const { userId } = req.params;
+    const { menus } = req.body;
+    if (!Array.isArray(menus)) return res.status(400).json({ error: 'menus must be an array' });
+    try {
+        await pool.query('BEGIN');
+        await pool.query('DELETE FROM branch_user_rights WHERE user_id = $1', [parseInt(userId)]);
+        if (menus.length > 0) {
+            const placeholders = menus.map((_, i) => `($1, $${i + 2})`).join(', ');
+            await pool.query(
+                `INSERT INTO branch_user_rights (user_id, menu_name) VALUES ${placeholders}`,
+                [parseInt(userId), ...menus]
+            );
+        }
+        await pool.query('COMMIT');
+        res.json({ message: 'User rights updated successfully' });
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error('Error updating branch user rights:', err);
+        res.status(500).json({ error: 'Failed to update user rights' });
+    }
+});
+
+
 app.use(express.static(path.join(__dirname, '../dist')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
@@ -2420,6 +2993,7 @@ app.use((err, req, res, next) => {
 process.on('unhandledRejection', (reason) => console.error('[UNHANDLED REJECTION]', reason));
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
 });
