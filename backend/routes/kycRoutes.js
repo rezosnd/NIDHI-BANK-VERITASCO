@@ -39,9 +39,9 @@ router.get('/kyc/verify/:memberId', async (req, res) => {
     }
     
     if (isVerified) {
-      res.json({ success: true, message: \`KYC for \${documentName} is Verified\`, memberName: \`\${customer.first_name} \${customer.last_name}\` });
+      res.json({ success: true, message: `KYC for ${documentName} is Verified`, memberName: `${customer.first_name} ${customer.last_name}` });
     } else {
-      res.json({ success: false, message: \`\${documentName} details not found for this member.\` });
+      res.json({ success: false, message: `${documentName} details not found for this member.` });
     }
     
   } catch (err) {
@@ -75,7 +75,7 @@ router.get('/kyc/pending-documents', async (req, res) => {
         id: customer.id,
         slNo: index + 1,
         memberId: customer.cif_number,
-        name: \`\${customer.first_name} \${customer.last_name}\`.trim(),
+        name: `${customer.first_name} ${customer.last_name}`.trim(),
         regDate: new Date(customer.created_at || Date.now()).toLocaleDateString('en-GB'),
         contactNo: customer.phone_number || 'N/A',
         totalKyc: uploadedKYC.length, 

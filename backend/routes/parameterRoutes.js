@@ -140,37 +140,37 @@ router.get('/online-requests', async (req, res) => {
     
     if (branchName && branchName !== '0' && branchName !== 'ALL') {
       params.push(branchName);
-      query += \` AND branch_name = $\${params.length}\`;
+      query += ` AND branch_name = $${params.length}`;
     }
     
     if (filterType && filterType !== '0' && searchStr) {
-      params.push(\`%\${searchStr}%\`);
+      params.push(`%${searchStr}%`);
       const len = params.length;
-      if (filterType === '2') query += \` AND member_name ILIKE $\${len}\`; // Name
-      if (filterType === '3') query += \` AND contact_no ILIKE $\${len}\`; // Mobile
-      if (filterType === '4') query += \` AND email ILIKE $\${len}\`; // Email
-      if (filterType === '5') query += \` AND city ILIKE $\${len}\`; // City
-      if (filterType === '10') query += \` AND reference_no ILIKE $\${len}\`; // Reference Id
+      if (filterType === '2') query += ` AND member_name ILIKE $${len}`; // Name
+      if (filterType === '3') query += ` AND contact_no ILIKE $${len}`; // Mobile
+      if (filterType === '4') query += ` AND email ILIKE $${len}`; // Email
+      if (filterType === '5') query += ` AND city ILIKE $${len}`; // City
+      if (filterType === '10') query += ` AND reference_no ILIKE $${len}`; // Reference Id
     }
     
     if (planName && planName !== '0' && planName !== 'All') {
       params.push(planName);
-      query += \` AND plan_name = $\${params.length}\`;
+      query += ` AND plan_name = $${params.length}`;
     }
     
     if (status && status !== '-1' && status !== 'All') {
       let statusStr = status === '1' ? 'Approved' : (status === '2' ? 'Rejected' : 'Pending');
       params.push(statusStr);
-      query += \` AND status = $\${params.length}\`;
+      query += ` AND status = $${params.length}`;
     }
     
     if (fromDate) {
       params.push(fromDate);
-      query += \` AND request_date >= $\${params.length}\`;
+      query += ` AND request_date >= $${params.length}`;
     }
     if (toDate) {
       params.push(toDate);
-      query += \` AND request_date <= $\${params.length}\`;
+      query += ` AND request_date <= $${params.length}`;
     }
     
     query += " ORDER BY id DESC";
@@ -192,7 +192,7 @@ router.put('/online-requests/:id/approve', async (req, res) => {
       "UPDATE online_requests SET status = $1, approved_date = $2, remark = $3 WHERE id = $4",
       [status || 'Approved', approved_date, remark, id]
     );
-    res.json({ success: true, message: \`Request \${status || 'Approved'} successfully\` });
+    res.json({ success: true, message: `Request ${status || 'Approved'} successfully` });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
