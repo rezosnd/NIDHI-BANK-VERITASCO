@@ -58,8 +58,7 @@ import DesignationMenuRights from './DesignationMenuRights';
 import BranchUserRights from './BranchUserRights';
 import ServiceCenterUserRights from './ServiceCenterUserRights';
 import CreateEmployee from './CreateEmployee';
-import { DotLottiePlayer } from '@dotlottie/react-player';
-import '@dotlottie/react-player/dist/index.css';
+import { DotLottiePlayer } from '@lottiefiles/dotlottie-react';
 import './FandomLogin.css';
 
 const TOP_NAV = [

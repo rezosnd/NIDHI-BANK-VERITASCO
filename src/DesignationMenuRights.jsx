@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DotLottiePlayer } from '@dotlottie/react-player';
+import { DotLottiePlayer } from '@lottiefiles/dotlottie-react';
 import { ALL_MENU_ITEMS } from './MenuList';
 import './DesignationMaster.css'; // Reusing the same CSS for consistency
 

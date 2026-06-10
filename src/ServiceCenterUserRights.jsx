@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './DesignationMaster.css';
 import { SC_MENU_STRUCTURE, SC_MENU_ITEMS } from './ServiceCenterMenuList';
-import { DotLottiePlayer } from '@dotlottie/react-player';
+import { DotLottiePlayer } from '@lottiefiles/dotlottie-react';
 
 const getAuthToken = () => localStorage.getItem('authToken') || localStorage.getItem('token');
 
