@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './DesignationMaster.css';
 import { BRANCH_MENU_STRUCTURE, BRANCH_MENU_ITEMS } from './BranchMenuList';
-import { DotLottiePlayer } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const getAuthToken = () => localStorage.getItem('authToken') || localStorage.getItem('token');
 
@@ -270,7 +270,7 @@ export default function BranchUserRights() {
 
                     {isRightsLoading ? (
                         <div className="loading-state">
-                            <DotLottiePlayer
+                            <DotLottieReact
                                 src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie"
                                 autoplay loop
                                 style={{ width: '80px', height: '80px' }}

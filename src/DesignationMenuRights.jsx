@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DotLottiePlayer } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { ALL_MENU_ITEMS } from './MenuList';
 import './DesignationMaster.css'; // Reusing the same CSS for consistency
 
@@ -193,7 +193,7 @@ const DesignationMenuRights = () => {
                             
                             <div className="field-group">
                                 <button type="button" onClick={handleAssign} disabled={isSaving || !selectedDesignation} className="primary-button" style={{ maxWidth: '200px' }}>
-                                    {isSaving ? <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", margin: "-4px 0" }}><DotLottiePlayer src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> : 'Assign Rights'}
+                                    {isSaving ? <div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", margin: "-4px 0" }}><DotLottieReact src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> : 'Assign Rights'}
                                 </button>
                             </div>
                         </div>
@@ -217,7 +217,7 @@ const DesignationMenuRights = () => {
 
                         {isLoading ? (
                             <div className="loading-state">
-                                <DotLottiePlayer src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "80px", height: "80px" }} />
+                                <DotLottieReact src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "80px", height: "80px" }} />
                                 <p>Loading permissions map...</p>
                             </div>
                         ) : (

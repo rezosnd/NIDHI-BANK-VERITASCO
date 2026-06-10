@@ -58,7 +58,7 @@ import DesignationMenuRights from './DesignationMenuRights';
 import BranchUserRights from './BranchUserRights';
 import ServiceCenterUserRights from './ServiceCenterUserRights';
 import CreateEmployee from './CreateEmployee';
-import { DotLottiePlayer } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import './FandomLogin.css';
 
 const TOP_NAV = [
@@ -492,7 +492,7 @@ function Dashboard({ user, onLogout }) {
                {isModuleLoading ? (
                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, height: '100%', minHeight: '50vh' }}>
                    <div style={{ filter: 'drop-shadow(0 15px 25px rgba(37, 99, 235, 0.2))' }}>
-                     <DotLottiePlayer
+                     <DotLottieReact
                        src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie"
                        autoplay
                        loop
@@ -566,7 +566,7 @@ function Dashboard({ user, onLogout }) {
                    }}>
                      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
                        <div style={{ filter: 'drop-shadow(0 15px 25px rgba(37, 99, 235, 0.4))' }}>
-                         <DotLottiePlayer
+                         <DotLottieReact
                            src="/a98bb3e4-1186-11ee-8844-2303de03a1b3.lottie"
                            autoplay
                            loop

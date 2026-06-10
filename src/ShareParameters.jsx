@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './ShareParameters.css';
-import { DotLottiePlayer } from '@lottiefiles/dotlottie-react';
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 const Shield = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>;
 const CheckCircle = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
 const Search = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
@@ -201,7 +201,7 @@ const ShareParameters = () => {
       return (
         <tr>
           <td colSpan="4" className="share-empty">
-            <span className="share-loading"><div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><DotLottiePlayer src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> Loading...</span>
+            <span className="share-loading"><div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><DotLottieReact src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> Loading...</span>
           </td>
         </tr>
       );
@@ -233,7 +233,7 @@ const ShareParameters = () => {
       return (
         <tr>
           <td colSpan="7" className="share-empty">
-            <span className="share-loading"><div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><DotLottiePlayer src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> Loading...</span>
+            <span className="share-loading"><div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><DotLottieReact src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> Loading...</span>
           </td>
         </tr>
       );
@@ -358,12 +358,12 @@ const ShareParameters = () => {
 
               <label className="share-field">
                 <span>Authorised Capital</span>
-                <input type="text" value={authCapitalForm.newCapital} onChange={(e) => setAuthCapitalForm(p => ({...p, newCapital: e.target.value}))} />
+                <input type="text" value={authCapitalForm.newCapital} onChange={(e) => setAuthCapitalForm(p => ({ ...p, newCapital: e.target.value }))} />
               </label>
 
               <label className="share-field">
                 <span>Confirm Authorised Capital</span>
-                <input type="text" value={authCapitalForm.confirmCapital} onChange={(e) => setAuthCapitalForm(p => ({...p, confirmCapital: e.target.value}))} />
+                <input type="text" value={authCapitalForm.confirmCapital} onChange={(e) => setAuthCapitalForm(p => ({ ...p, confirmCapital: e.target.value }))} />
               </label>
 
               <div className="share-actions-row">
@@ -385,12 +385,12 @@ const ShareParameters = () => {
 
               <label className="share-field">
                 <span>Paid up Capital</span>
-                <input type="text" value={paidCapitalForm.newCapital} onChange={(e) => setPaidCapitalForm(p => ({...p, newCapital: e.target.value}))} />
+                <input type="text" value={paidCapitalForm.newCapital} onChange={(e) => setPaidCapitalForm(p => ({ ...p, newCapital: e.target.value }))} />
               </label>
 
               <label className="share-field">
                 <span>Confirm Paid up Capital</span>
-                <input type="text" value={paidCapitalForm.confirmCapital} onChange={(e) => setPaidCapitalForm(p => ({...p, confirmCapital: e.target.value}))} />
+                <input type="text" value={paidCapitalForm.confirmCapital} onChange={(e) => setPaidCapitalForm(p => ({ ...p, confirmCapital: e.target.value }))} />
               </label>
 
               <div className="share-actions-row">
@@ -545,7 +545,7 @@ const ShareParameters = () => {
                 {isLoading && promoters.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="share-empty">
-                      <span className="share-loading"><div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><DotLottiePlayer src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> Loading...</span>
+                      <span className="share-loading"><div style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}><DotLottieReact src="/36038e50-1178-11ee-9eeb-932b0ace7009.lottie" autoplay loop style={{ width: "45px", height: "45px" }} /></div> Loading...</span>
                     </td>
                   </tr>
                 ) : filteredPromoters.length === 0 ? (
