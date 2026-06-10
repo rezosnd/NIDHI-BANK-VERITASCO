@@ -3,8 +3,10 @@ const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
 
 const app = express();
+app.set('trust proxy', 1);
 
 const pool = require('./config/db');
 const { setupSecurityMiddleware } = require('./middleware/security');
