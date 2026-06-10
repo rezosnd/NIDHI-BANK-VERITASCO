@@ -634,7 +634,14 @@ app.use('/api', authenticateToken, eventRoutes);
 app.use('/api', authenticateToken, settingsRoutes);
 app.use('/api', authenticateToken, transactionRoutes);
 
+// Health check – useful for Vercel monitoring
+app.get('/api/health', (req, res) => {
+  res.json({ success: true, message: 'Backend is running' });
+});
+
+// Serve frontend build (if it exists)
 app.use(express.static(path.join(__dirname, '../dist')));
+// Fallback for SPA routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
@@ -647,7 +654,11 @@ app.use((err, req, res, next) => {
 process.on('unhandledRejection', (reason) => console.error('[UNHANDLED REJECTION]', reason));
 
 const PORT = process.env.PORT || 5000;
-
+// Log important env info at startup (won't expose secrets)
+console.log('🚀 Backend starting – PORT:', PORT, '| NODE_ENV:', process.env.NODE_ENV || 'development');
+if (!process.env.DATABASE_URL) {
+  console.warn('⚠️ WARNING: DATABASE_URL is not set – DB connections will fail');
+}
 app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
+  console.log(`Backend server listening on port ${PORT}`);
 });
