@@ -63,28 +63,28 @@ async function initDb() {
 
     try {
       await pool.query(`ALTER TABLE users ADD COLUMN branch_id INTEGER`);
-    } catch(e) {}
+    } catch (e) { }
 
     try {
       await pool.query(`ALTER TABLE users ADD COLUMN service_center_id INTEGER`);
-    } catch(e) {}
+    } catch (e) { }
 
-    try { await pool.query(`ALTER TABLE users ADD COLUMN contact_name VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN mobile_no VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN phone_no VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN email VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN address TEXT`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN pin_code VARCHAR(50)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_account_no VARCHAR(50)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_account_name VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_name VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_ifsc VARCHAR(20)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_branch_name VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN min_balance NUMERIC(18,2) DEFAULT 0`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT true`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN state VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN dob VARCHAR(255)`); } catch(e) {}
-    try { await pool.query(`ALTER TABLE users ADD COLUMN blood_group VARCHAR(50)`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE users ADD COLUMN contact_name VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN mobile_no VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN phone_no VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN email VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN address TEXT`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN pin_code VARCHAR(50)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_account_no VARCHAR(50)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_account_name VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_name VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_ifsc VARCHAR(20)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN bank_branch_name VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN min_balance NUMERIC(18,2) DEFAULT 0`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT true`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN state VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN dob VARCHAR(255)`); } catch (e) { }
+    try { await pool.query(`ALTER TABLE users ADD COLUMN blood_group VARCHAR(50)`); } catch (e) { }
 
     // Always ensure the admin user exists (ON CONFLICT DO NOTHING = safe to run every startup)
     await pool.query(
@@ -138,7 +138,7 @@ async function initDb() {
       menu_name VARCHAR(255) NOT NULL,
       UNIQUE(designation_id, menu_name)
     )`);
-    
+
     await pool.query(`CREATE TABLE IF NOT EXISTS company_profile (
       id SERIAL PRIMARY KEY,
       company_name VARCHAR(255),
@@ -223,7 +223,7 @@ async function initDb() {
       account_number VARCHAR(100) DEFAULT '',
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
-    
+
     // Seed initial banks
     const { rows: bankRows } = await pool.query("SELECT count(*) as count FROM bank_details");
     if (parseInt(bankRows[0].count) === 0) {
@@ -238,7 +238,7 @@ async function initDb() {
         ['AL166', 'RBI BANK'],
         ['AL181', 'gns']
       ];
-      
+
       for (const [code, name] of defaultBanks) {
         await pool.query(
           "INSERT INTO bank_details (bank_code, bank_name) VALUES ($1, $2)",
@@ -254,29 +254,29 @@ async function initDb() {
       status VARCHAR(20) DEFAULT 'Active',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
-    
+
     // Auto-add type column if missing (for seamless migration)
-    try { await pool.query(`ALTER TABLE states ADD COLUMN type VARCHAR(50) DEFAULT 'State'`); } catch(e) {}
+    try { await pool.query(`ALTER TABLE states ADD COLUMN type VARCHAR(50) DEFAULT 'State'`); } catch (e) { }
 
     const { rows: stateRows } = await pool.query("SELECT count(*) as count FROM states");
     if (parseInt(stateRows[0].count) === 0) {
       const defaultStates = [
-        { name: 'Andhra Pradesh', type: 'State' }, { name: 'Arunachal Pradesh', type: 'State' }, { name: 'Assam', type: 'State' }, 
-        { name: 'Bihar', type: 'State' }, { name: 'Chhattisgarh', type: 'State' }, { name: 'Goa', type: 'State' }, 
-        { name: 'Gujarat', type: 'State' }, { name: 'Haryana', type: 'State' }, { name: 'Himachal Pradesh', type: 'State' }, 
-        { name: 'Jharkhand', type: 'State' }, { name: 'Karnataka', type: 'State' }, { name: 'Kerala', type: 'State' }, 
-        { name: 'Madhya Pradesh', type: 'State' }, { name: 'Maharashtra', type: 'State' }, { name: 'Manipur', type: 'State' }, 
-        { name: 'Meghalaya', type: 'State' }, { name: 'Mizoram', type: 'State' }, { name: 'Nagaland', type: 'State' }, 
-        { name: 'Odisha', type: 'State' }, { name: 'Punjab', type: 'State' }, { name: 'Rajasthan', type: 'State' }, 
-        { name: 'Sikkim', type: 'State' }, { name: 'Tamil Nadu', type: 'State' }, { name: 'Telangana', type: 'State' }, 
-        { name: 'Tripura', type: 'State' }, { name: 'Uttar Pradesh', type: 'State' }, { name: 'Uttarakhand', type: 'State' }, 
-        { name: 'West Bengal', type: 'State' }, 
-        { name: 'Andaman and Nicobar Islands', type: 'Union Territory' }, { name: 'Chandigarh', type: 'Union Territory' }, 
-        { name: 'Dadra and Nagar Haveli and Daman and Diu', type: 'Union Territory' }, { name: 'Lakshadweep', type: 'Union Territory' }, 
-        { name: 'Delhi', type: 'Union Territory' }, { name: 'Puducherry', type: 'Union Territory' }, 
+        { name: 'Andhra Pradesh', type: 'State' }, { name: 'Arunachal Pradesh', type: 'State' }, { name: 'Assam', type: 'State' },
+        { name: 'Bihar', type: 'State' }, { name: 'Chhattisgarh', type: 'State' }, { name: 'Goa', type: 'State' },
+        { name: 'Gujarat', type: 'State' }, { name: 'Haryana', type: 'State' }, { name: 'Himachal Pradesh', type: 'State' },
+        { name: 'Jharkhand', type: 'State' }, { name: 'Karnataka', type: 'State' }, { name: 'Kerala', type: 'State' },
+        { name: 'Madhya Pradesh', type: 'State' }, { name: 'Maharashtra', type: 'State' }, { name: 'Manipur', type: 'State' },
+        { name: 'Meghalaya', type: 'State' }, { name: 'Mizoram', type: 'State' }, { name: 'Nagaland', type: 'State' },
+        { name: 'Odisha', type: 'State' }, { name: 'Punjab', type: 'State' }, { name: 'Rajasthan', type: 'State' },
+        { name: 'Sikkim', type: 'State' }, { name: 'Tamil Nadu', type: 'State' }, { name: 'Telangana', type: 'State' },
+        { name: 'Tripura', type: 'State' }, { name: 'Uttar Pradesh', type: 'State' }, { name: 'Uttarakhand', type: 'State' },
+        { name: 'West Bengal', type: 'State' },
+        { name: 'Andaman and Nicobar Islands', type: 'Union Territory' }, { name: 'Chandigarh', type: 'Union Territory' },
+        { name: 'Dadra and Nagar Haveli and Daman and Diu', type: 'Union Territory' }, { name: 'Lakshadweep', type: 'Union Territory' },
+        { name: 'Delhi', type: 'Union Territory' }, { name: 'Puducherry', type: 'Union Territory' },
         { name: 'Ladakh', type: 'Union Territory' }, { name: 'Jammu and Kashmir', type: 'Union Territory' }
       ];
-      
+
       for (const s of defaultStates) {
         await pool.query("INSERT INTO states (state_name, type) VALUES ($1, $2) ON CONFLICT DO NOTHING", [s.name, s.type]);
       }
@@ -377,7 +377,7 @@ async function initDb() {
 
     try {
       await pool.query("ALTER TABLE service_centers ADD COLUMN display_on_branch_page BOOLEAN DEFAULT true");
-    } catch(e) {}
+    } catch (e) { }
 
     await pool.query(`CREATE TABLE IF NOT EXISTS balance_requests (
       id SERIAL PRIMARY KEY,
@@ -538,21 +538,21 @@ async function initDb() {
       created_by VARCHAR(255),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`);
-    
+
     // Seed default relationships if empty
     const { rows: relRows } = await pool.query("SELECT count(*) as count FROM relationships");
     if (parseInt(relRows[0].count) === 0) {
-        const defaults = [
-            ['Mother', 'Mother'], ['Father', 'Father'], ['Son', 'Son'], ['Daughter', 'Daughter'],
-            ['Son-in-Law', 'Son-in-Law'], ['Husband', 'Husband'], ['Sister', 'Sister'],
-            ['other', 'others'], ['Wife', 'Wife'], ['Grand D', 'Grand daughter'],
-            ['Grand son', 'Grand son'], ['BROUTHER', 'BROUTHER'], ['F in law', 'Father in law'],
-            ['D in law', 'Daughter in Law'], ['NIECE', 'NIECE'], ['NEPHEW', 'NEPHEW'],
-            ['M in law', 'Mother in law'], ['Cousin', 'Cousin']
-        ];
-        for (const [code, desc] of defaults) {
-            await pool.query("INSERT INTO relationships (code, description) VALUES ($1, $2)", [code, desc]);
-        }
+      const defaults = [
+        ['Mother', 'Mother'], ['Father', 'Father'], ['Son', 'Son'], ['Daughter', 'Daughter'],
+        ['Son-in-Law', 'Son-in-Law'], ['Husband', 'Husband'], ['Sister', 'Sister'],
+        ['other', 'others'], ['Wife', 'Wife'], ['Grand D', 'Grand daughter'],
+        ['Grand son', 'Grand son'], ['BROUTHER', 'BROUTHER'], ['F in law', 'Father in law'],
+        ['D in law', 'Daughter in Law'], ['NIECE', 'NIECE'], ['NEPHEW', 'NEPHEW'],
+        ['M in law', 'Mother in law'], ['Cousin', 'Cousin']
+      ];
+      for (const [code, desc] of defaults) {
+        await pool.query("INSERT INTO relationships (code, description) VALUES ($1, $2)", [code, desc]);
+      }
     }
 
     await pool.query(`CREATE TABLE IF NOT EXISTS parameters (
@@ -644,8 +644,11 @@ app.get('/api/health', (req, res) => {
 // Serve frontend build (if it exists)
 app.use(express.static(path.join(__dirname, '../dist')));
 // Fallback for SPA routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Nidhi Bank Backend Running'
+  });
 });
 
 // 🛡️ Global Error Handler
